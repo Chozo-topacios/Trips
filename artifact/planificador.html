@@ -1,0 +1,460 @@
+<title>Ruta iCAR 03T</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: una columna estrecha tipo "hoja de ruta"; señalética vial (verde de autopista + ámbar de peaje) como acento. */
+:root {
+  --bg: #f3f5f2;
+  --surface: #ffffff;
+  --ink: #18231e;
+  --muted: #5b6a62;
+  --line: #d9e0db;
+  --road: #13664f;      /* verde señal de autopista */
+  --road-ink: #ffffff;
+  --toll: #c77a12;      /* ámbar de peaje */
+  --soft: #e5efe9;
+  --danger: #a2321f;
+  --f-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101613; --surface: #17201c; --ink: #e5ece7; --muted: #9aaba2; --line: #2a3832;
+    --road: #3fb58f; --road-ink: #06231a; --toll: #e6a145; --soft: #1d2d26; --danger: #f08a75;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101613; --surface: #17201c; --ink: #e5ece7; --muted: #9aaba2; --line: #2a3832;
+  --road: #3fb58f; --road-ink: #06231a; --toll: #e6a145; --soft: #1d2d26; --danger: #f08a75;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 64px; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3, .sign { font-family: var(--f-display); text-wrap: balance; }
+header h1 { margin: 0; font-size: 34px; line-height: 1.05; letter-spacing: .2px; }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.sign {
+  display: inline-flex; align-items: center; gap: 8px; background: var(--road); color: var(--road-ink);
+  border-radius: 6px; padding: 3px 10px; font-weight: 600; font-size: 13px; letter-spacing: .8px; text-transform: uppercase;
+  border: 2px solid var(--road-ink); outline: 2px solid var(--road);
+}
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.q { font-family: var(--f-display); font-size: 22px; font-weight: 600; margin: 0; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mode {
+  font: inherit; text-align: left; cursor: pointer; border-radius: 10px; padding: 14px;
+  border: 2px solid var(--line); background: var(--bg); color: var(--ink); display: flex; flex-direction: column; gap: 2px;
+}
+.mode b { font-family: var(--f-display); font-size: 20px; font-weight: 600; }
+.mode span { color: var(--muted); font-size: 13px; }
+.mode[aria-pressed="true"] { border-color: var(--road); background: var(--soft); }
+.mode:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--road); outline-offset: 2px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 12px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; min-width: 0; }
+input, select, textarea {
+  font: inherit; font-size: 15px; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 9px 11px; width: 100%;
+}
+.example { font-size: 13px; color: var(--toll); font-weight: 500; }
+details { border-top: 1px dashed var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+details .grid { margin-top: 12px; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button.primary, a.btn, button.ghost {
+  font: inherit; font-weight: 600; border-radius: 8px; padding: 10px 18px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+button.primary { background: var(--road); color: var(--road-ink); border: 0; }
+button.primary:disabled { opacity: .55; cursor: wait; }
+button.ghost, a.btn { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+a.btn { border-color: var(--road); color: var(--road); }
+
+/* Resultado */
+#result { min-width: 0; }
+.status { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.status::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--road); border-right-color: transparent; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .status::before { animation: none; } }
+.energy { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+.energy div { background: var(--soft); border-radius: 8px; padding: 8px 12px; }
+.energy b { display: block; font-family: var(--f-display); font-size: 24px; font-variant-numeric: tabular-nums; }
+.energy span { font-size: 12px; color: var(--muted); }
+.md { min-width: 0; overflow-wrap: anywhere; }
+.md h2 { font-size: 22px; margin: 22px 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--road); }
+.md h3 { font-size: 18px; margin: 16px 0 4px; }
+.md h4 { font-size: 16px; margin: 12px 0 4px; }
+.md p { margin: 6px 0; max-width: 70ch; }
+.md ul, .md ol { margin: 6px 0; padding-left: 22px; }
+.md li { margin: 2px 0; }
+.md a { color: var(--road); }
+.md code { background: var(--soft); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+.tbl { overflow-x: auto; margin: 8px 0; }
+.md table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+.md th, .md td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.md th { background: var(--soft); font-weight: 600; }
+.notice { font-size: 13px; color: var(--muted); border-left: 3px solid var(--toll); padding: 4px 10px; margin: 0; }
+.err { color: var(--danger); font-size: 14px; margin: 0; }
+.thread { display: flex; flex-direction: column; gap: 14px; }
+.you { align-self: flex-end; background: var(--road); color: var(--road-ink); border-radius: 12px 12px 2px 12px; padding: 8px 12px; max-width: 85%; white-space: pre-wrap; }
+.ask { display: flex; gap: 8px; }
+.ask textarea { resize: vertical; min-height: 44px; }
+@media (max-width: 480px) {
+  header h1 { font-size: 28px; }
+  .modes { grid-template-columns: 1fr; }
+  .ask { flex-direction: column; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="sign">Planificador de viajes</span>
+    <h1 style="margin-top:10px">Ruta iCAR 03T</h1>
+    <p>Dime cómo viajas y te armo el plan: ruta, peajes, batería, paradas y hospedaje si vas en carro; o imperdibles, zonas y presupuesto si vas en avión.</p>
+  </header>
+
+  <section class="panel" aria-labelledby="q1">
+    <p class="q" id="q1">¿El viaje es en carro o en avión?</p>
+    <div class="modes" role="group" aria-labelledby="q1">
+      <button class="mode" id="m-carro" type="button" data-mode="carro" aria-pressed="true"><b>🚗 Carro</b><span>Ruta, peajes, energía, paradas, hospedaje</span></button>
+      <button class="mode" id="m-avion" type="button" data-mode="avion" aria-pressed="false"><b>✈️ Avión</b><span>Imperdibles, zonas, movilidad, presupuesto</span></button>
+    </div>
+
+    <form id="f-carro" autocomplete="off">
+      <div class="grid">
+        <label>Origen<input id="c-origen" required value="Bogotá"></label>
+        <label>Destino<input id="c-destino" required value="Medellín"></label>
+        <label>Paradas que quieres hacer<input id="c-paradas" placeholder="Opcional, ej. Honda"></label>
+        <label>Fecha de salida<input id="c-fecha" type="date"></label>
+        <label>Días<input id="c-dias" type="number" min="1" value="4"></label>
+        <label>Viajeros<input id="c-viajeros" type="number" min="1" value="2"></label>
+        <label>Batería al salir (%)<input id="c-soc" type="number" min="5" max="100" value="100"></label>
+        <label>Presupuesto<input id="c-presu" value="COP 2.500.000"></label>
+        <label>Tipo de viaje<select id="c-iv"><option>Ida y vuelta</option><option>Solo ida</option></select></label>
+      </div>
+      <label style="margin-top:12px">Intereses<input id="c-int" value="pueblos, miradores, comida típica, hotel con cargador"></label>
+      <details>
+        <summary>⚡ Datos de mi iCAR 03T</summary>
+        <div class="grid">
+          <label>Batería útil (kWh)<input id="v-bat" type="number" step="0.1" value="65.7"></label>
+          <label>Consumo (kWh/100 km)<input id="v-cons" type="number" step="0.1" value="17.5"></label>
+          <label>Carga rápida máx. (kW)<input id="v-dc" type="number" value="80"></label>
+        </div>
+        <p class="hint" style="margin-top:8px">Son valores de referencia; cámbialos por los de la ficha técnica de tu versión.</p>
+      </details>
+    </form>
+
+    <form id="f-avion" autocomplete="off" hidden>
+      <div class="grid">
+        <label>Salgo desde<input id="a-origen" value="Bogotá"></label>
+        <label>Destino<input id="a-destino" required value="Cartagena"></label>
+        <label>Fecha de llegada<input id="a-fecha" type="date"></label>
+        <label>Días<input id="a-dias" type="number" min="1" value="4" required></label>
+        <label>Viajeros<input id="a-viajeros" type="number" min="1" value="2"></label>
+        <label>Presupuesto<input id="a-presu" value="COP 4.000.000"></label>
+      </div>
+      <label style="margin-top:12px">Intereses<input id="a-int" value="historia, playa, comida, atardeceres"></label>
+    </form>
+
+    <span class="example" id="ex-note">Los datos de arriba son un ejemplo: cámbialos por los de tu viaje.</span>
+    <div class="actions">
+      <button class="primary" id="go" type="button">Armar mi plan</button>
+      <button class="ghost" id="stop" type="button" hidden>Detener</button>
+      <a class="btn" id="maps" target="_blank" rel="noopener" href="#">🗺️ Ver ruta en Google Maps</a>
+    </div>
+    <p class="err" id="err" hidden></p>
+  </section>
+
+  <section class="panel" id="out" hidden aria-live="polite">
+    <div id="energy" class="energy" hidden></div>
+    <div class="thread" id="thread"></div>
+    <p class="notice">Plan generado por Claude con su propio conocimiento, sin consultar internet en vivo. Verifica tarifas de peajes, precios, horarios y cargadores antes de viajar.</p>
+    <div class="ask">
+      <textarea id="followup" placeholder="Ajusta el plan: ‘evita peajes’, ‘agrega una noche en Guatapé’, ‘¿y si salgo con 80 %?’"></textarea>
+      <button class="primary" id="send" type="button">Enviar</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let mode = "carro";
+  let sample = null;
+  let toolsOk = false;
+  let turns = [];          // conversación que guarda la página
+  let rules = "";          // instrucciones fijas (primer turno)
+  let ctl = null;
+
+  // ---------- Modo ----------
+  function setMode(m) {
+    mode = m;
+    $("m-carro").setAttribute("aria-pressed", String(m === "carro"));
+    $("m-avion").setAttribute("aria-pressed", String(m === "avion"));
+    $("f-carro").hidden = m !== "carro";
+    $("f-avion").hidden = m !== "avion";
+    $("maps").hidden = m !== "carro";
+    updateMaps();
+  }
+  $("m-carro").onclick = () => setMode("carro");
+  $("m-avion").onclick = () => setMode("avion");
+
+  function updateMaps() {
+    const o = $("c-origen").value.trim(), d = $("c-destino").value.trim();
+    const p = new URLSearchParams({ api: "1", origin: o, destination: d, travelmode: "driving" });
+    const w = $("c-paradas").value.split(",").map((s) => s.trim()).filter(Boolean);
+    if (w.length) p.set("waypoints", w.join("|"));
+    $("maps").href = "https://www.google.com/maps/dir/?" + p.toString();
+  }
+  ["c-origen", "c-destino", "c-paradas"].forEach((id) => $(id).addEventListener("input", updateMaps));
+  updateMaps();
+
+  // ---------- Calculadora de energía (se ejecuta en la página) ----------
+  function vehiculo() {
+    return {
+      bateria_kwh: Number($("v-bat").value) || 65.7,
+      consumo_kwh_100km: Number($("v-cons").value) || 17.5,
+      carga_dc_max_kw: Number($("v-dc").value) || 80,
+      masa_kg: 1900,
+    };
+  }
+  function planEnergia(inp) {
+    const v = vehiculo();
+    const dist = Math.max(1, Number(inp.distancia_km) || 0);
+    const up = Number(inp.subida_total_m) || 0, down = Number(inp.bajada_total_m) || 0;
+    const vel = Number(inp.velocidad_promedio_kmh) || 75;
+    const soc0 = Math.min(100, Number(inp.soc_inicial_pct) || Number($("c-soc").value) || 100);
+    const reserva = Number(inp.soc_reserva_pct) || 15;
+    const fv = vel > 100 ? 1.3 : vel > 90 ? 1.15 : vel < 60 ? 0.92 : 1;
+    const plano = (dist / 100) * v.consumo_kwh_100km * fv * 1.05;
+    const subida = (v.masa_kg * 9.81 * up) / 3.6e6 / 0.88;
+    const regen = (v.masa_kg * 9.81 * down) / 3.6e6 * 0.6 * 0.88;
+    const total = Math.max(plano + subida - regen, plano * 0.5);
+    const pctPorKm = (total / v.bateria_kwh) * 100 / dist;
+    const cargadores = (Array.isArray(inp.cargadores) ? inp.cargadores : [])
+      .map((c) => ({ nombre: String(c.nombre || "Cargador"), km: Number(c.km) || 0, kw: Number(c.potencia_kw) || v.carga_dc_max_kw }))
+      .filter((c) => c.km > 0 && c.km < dist).sort((a, b) => a.km - b.km);
+    let soc = soc0, km = 0; const paradas = [];
+    cargadores.forEach((c, i) => {
+      const llegada = soc - (c.km - km) * pctPorKm;
+      const sig = i + 1 < cargadores.length ? cargadores[i + 1].km : dist;
+      const necesario = reserva + (sig - c.km) * pctPorKm + 5;
+      if (llegada - (sig - c.km) * pctPorKm < reserva) {
+        const hasta = Math.min(80, Math.max(necesario, llegada + 10));
+        const kwh = ((hasta - llegada) / 100) * v.bateria_kwh;
+        const pot = Math.min(c.kw, v.carga_dc_max_kw) * 0.7;
+        paradas.push({ cargador: c.nombre, km: Math.round(c.km), llega_con_pct: Math.round(llegada), cargar_hasta_pct: Math.round(hasta), minutos: Math.round(kwh / pot * 60) });
+        soc = hasta;
+      } else soc = llegada;
+      km = c.km;
+    });
+    const r = {
+      energia_kwh: +total.toFixed(1),
+      consumo_efectivo_kwh_100km: +(total / dist * 100).toFixed(1),
+      autonomia_con_reserva_km: Math.round(((soc0 - reserva) / 100 * v.bateria_kwh) / total * dist),
+      llega_sin_cargar_con_pct: Math.round(soc0 - pctPorKm * dist),
+      paradas,
+      llega_con_plan_pct: Math.round(soc - (dist - km) * pctPorKm),
+      nota: "Estimación: el consumo real cambia con clima, tráfico, carga y manejo.",
+    };
+    showEnergy(r, paradas.length);
+    return r;
+  }
+  function showEnergy(r, n) {
+    const box = $("energy");
+    box.replaceChildren();
+    [[r.energia_kwh + " kWh", "energía estimada (ida)"], [r.consumo_efectivo_kwh_100km, "kWh/100 km con el relieve"],
+     [r.autonomia_con_reserva_km + " km", "autonomía con reserva"], [String(n), n === 1 ? "parada de carga" : "paradas de carga"]]
+      .forEach(([b, s]) => { const d = document.createElement("div"); const bb = document.createElement("b"); bb.textContent = b; const ss = document.createElement("span"); ss.textContent = s; d.append(bb, ss); box.append(d); });
+    box.hidden = false;
+  }
+  const tools = [{
+    name: "plan_energia",
+    description: "Calcula el consumo de batería de la iCAR 03T del usuario para un trayecto de ida y propone paradas de carga (cargar hasta ~80 %). Devuelve kWh, autonomía, % de llegada y paradas con minutos. Pásale tu mejor estimación de distancia, desnivel acumulado y los cargadores rápidos que conozcas en la ruta con su km desde el origen.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        distancia_km: { type: "number" },
+        subida_total_m: { type: "number", description: "Desnivel positivo acumulado estimado" },
+        bajada_total_m: { type: "number", description: "Desnivel negativo acumulado estimado" },
+        velocidad_promedio_kmh: { type: "number" },
+        soc_inicial_pct: { type: "number" },
+        cargadores: { type: "array", items: { type: "object", properties: { nombre: { type: "string" }, km: { type: "number" }, potencia_kw: { type: "number" } }, required: ["nombre", "km"] } },
+      },
+      required: ["distancia_km"],
+    },
+    execute: (input) => planEnergia(input),
+  }];
+
+  // ---------- Instrucciones ----------
+  function buildRules() {
+    const v = vehiculo();
+    return `Eres "Ruta", un planificador de viajes experto. Responde en español, cercano y práctico. Fecha de hoy: ${new Date().toISOString().slice(0, 10)}.
+No tienes acceso a internet: usa tu conocimiento, marca los precios y tarifas como aproximados (indica el año de referencia) y no inventes nombres de hoteles, cargadores o lugares de los que no estés seguro; si dudas, sugiere cómo buscarlos.
+Formato: Markdown con encabezados ## y ###, tablas para peajes, paradas de carga, itinerario y presupuesto, listas cortas. Termina con "## Resumen rápido" (3 a 5 viñetas). No uses HTML.
+
+SI ES EN CARRO, el vehículo es una Chery iCAR 03T 100 % eléctrica (batería útil ${v.bateria_kwh} kWh, consumo ${v.consumo_kwh_100km} kWh/100 km, carga rápida máx. ${v.carga_dc_max_kw} kW). No usa gasolina: si el usuario la menciona, acláralo con amabilidad. Secciones:
+1. Ruta recomendada y alternativas (vías, distancia, tiempo, estado vial típico, tramos de montaña o con obras frecuentes).
+2. Peajes: tabla con cada peaje en orden, tarifa aproximada para automóvil (categoría I en Colombia) y total; si es ida y vuelta, el total de ambos sentidos.
+3. Gestión de energía: ${toolsOk ? "llama a la herramienta plan_energia con tu estimación de distancia, desnivel y cargadores rápidos en la ruta, y explica su resultado" : "estima tú el consumo considerando el relieve"}: con qué % salir, dónde cargar, hasta qué % y cuánto tiempo, un plan B por parada y consejos (velocidad, regeneración en bajadas).
+4. Sitios turísticos en la ruta, idealmente coincidiendo con las paradas de carga.
+5. Hospedajes estratégicos (zonas y tipos; preferir con cargador o toma en parqueadero) con rango de precio.
+6. Presupuesto: peajes + energía (kWh × tarifa aproximada de carga) + hospedaje + comidas.
+
+SI ES EN AVIÓN, secciones: 1. Imperdibles y un itinerario día a día. 2. Zonas clave para hospedarse (por qué y rango de precio). 3. Movilidad local (desde el aeropuerto, apps, transporte, seguridad). 4. Presupuesto estimado (vuelo de referencia, hospedaje, comidas, actividades).
+
+Si en mensajes siguientes el usuario pide cambios, ajusta solo lo necesario y muestra lo que cambió.`;
+  }
+  function firstMessage() {
+    const g = (id) => $(id).value.trim();
+    if (mode === "carro") {
+      return [`Viaje en CARRO con mi iCAR 03T.`, `- Origen: ${g("c-origen")}`, `- Destino: ${g("c-destino")}`,
+        g("c-paradas") && `- Paradas deseadas: ${g("c-paradas")}`, g("c-fecha") && `- Salida: ${g("c-fecha")}`,
+        `- Días: ${g("c-dias")} (${g("c-iv").toLowerCase()})`, `- Viajeros: ${g("c-viajeros")}`, `- Batería al salir: ${g("c-soc")} %`,
+        g("c-presu") && `- Presupuesto: ${g("c-presu")}`, g("c-int") && `- Intereses: ${g("c-int")}`].filter(Boolean).join("\n");
+    }
+    return [`Viaje en AVIÓN.`, g("a-origen") && `- Salgo desde: ${g("a-origen")}`, `- Destino: ${g("a-destino")}`,
+      g("a-fecha") && `- Llegada: ${g("a-fecha")}`, `- Días: ${g("a-dias")}`, `- Viajeros: ${g("a-viajeros")}`,
+      g("a-presu") && `- Presupuesto: ${g("a-presu")}`, g("a-int") && `- Intereses: ${g("a-int")}`].filter(Boolean).join("\n");
+  }
+
+  // ---------- Markdown seguro (escapa todo el HTML) ----------
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function inline(s) {
+    s = esc(s);
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    return s;
+  }
+  function md(src) {
+    const lines = src.replace(/\r/g, "").split("\n");
+    let html = "", list = null, para = [];
+    const flushPara = () => { if (para.length) { html += "<p>" + inline(para.join(" ")) + "</p>"; para = []; } };
+    const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      const t = l.trim();
+      if (!t) { flushPara(); closeList(); continue; }
+      let m;
+      if ((m = t.match(/^(#{1,4})\s+(.*)$/))) {
+        flushPara(); closeList();
+        const lvl = Math.min(4, Math.max(2, m[1].length));
+        html += `<h${lvl}>${inline(m[2])}</h${lvl}>`; continue;
+      }
+      if (t.startsWith("|")) {
+        flushPara(); closeList();
+        const rows = [];
+        while (i < lines.length && lines[i].trim().startsWith("|")) { rows.push(lines[i].trim()); i++; }
+        i--;
+        const cells = (r) => r.replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        const isSep = (r) => /^[\s|:-]+$/.test(r);
+        const data = rows.filter((r) => !isSep(r));
+        if (!data.length) continue;
+        html += '<div class="tbl"><table><thead><tr>' + cells(data[0]).map((c) => `<th>${inline(c)}</th>`).join("") + "</tr></thead><tbody>";
+        data.slice(1).forEach((r) => { html += "<tr>" + cells(r).map((c) => `<td>${inline(c)}</td>`).join("") + "</tr>"; });
+        html += "</tbody></table></div>";
+        continue;
+      }
+      if ((m = t.match(/^[-*•]\s+(.*)$/)) || (m = t.match(/^\d+[.)]\s+(.*)$/))) {
+        flushPara();
+        const kind = /^\d/.test(t) ? "ol" : "ul";
+        if (list !== kind) { closeList(); html += `<${kind}>`; list = kind; }
+        html += `<li>${inline(m[1])}</li>`; continue;
+      }
+      if (/^(-{3,}|\*{3,})$/.test(t)) { flushPara(); closeList(); continue; }
+      closeList(); para.push(t);
+    }
+    flushPara(); closeList();
+    return html;
+  }
+
+  // ---------- Llamadas a Claude ----------
+  const msgFor = (code) => ({
+    not_granted: "Para armar el plan, permite que esta página use Claude (se te preguntó al pulsar el botón).",
+    sampling_disabled: "Claude no está disponible para esta cuenta.",
+    rate_limited: "Hay demasiadas solicitudes en este momento. Espera un poco y vuelve a intentar.",
+    session_expired: "Tu sesión expiró. Vuelve a iniciar sesión en Claude.",
+    refused: "Claude no pudo responder a esa solicitud. Prueba a reformularla.",
+    empty_completion: "No llegó respuesta. Prueba con una pregunta más corta.",
+    prompt_too_large: "La conversación es muy larga. Empieza un plan nuevo.",
+  }[code] || "Se cortó la conexión. Vuelve a intentar.");
+
+  function busy(on) {
+    $("go").disabled = on; $("send").disabled = on; $("stop").hidden = !on;
+  }
+
+  async function ask(userText, isFirst) {
+    $("err").hidden = true;
+    if (!sample) { showErr("Esta página necesita abrirse dentro de Claude para armar el plan."); return; }
+    const thread = $("thread");
+    if (isFirst) { thread.replaceChildren(); $("energy").hidden = true; turns = []; rules = buildRules(); }
+    else { const y = document.createElement("div"); y.className = "you"; y.textContent = userText; thread.append(y); }
+    const out = document.createElement("div"); out.className = "md";
+    const st = document.createElement("div"); st.className = "status"; st.textContent = "Pensando en tu viaje… (puede tardar un minuto)";
+    thread.append(st, out);
+    $("out").hidden = false;
+    if (isFirst) $("out").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    turns.push({ role: "user", content: userText });
+    ctl = new AbortController();
+    busy(true);
+    const opts = {
+      signal: ctl.signal, modelTier: "complex",
+      onText: ({ text }) => { st.remove(); out.innerHTML = md(text); },
+    };
+    if (toolsOk && mode === "carro") opts.tools = tools; else opts.cache = false;
+    try {
+      const { text, truncated } = await sample([{ role: "user", content: rules }, ...turns], opts);
+      st.remove(); out.innerHTML = md(text);
+      turns.push({ role: "assistant", content: text });
+      if (truncated) out.insertAdjacentHTML("beforeend", '<p class="notice">La respuesta quedó incompleta. Pide “continúa”.</p>');
+    } catch (e) {
+      st.remove();
+      turns.pop();
+      if (e && e.text) out.innerHTML = md(e.text); else out.remove();
+      if (e?.code !== "cancelled") showErr(msgFor(e?.code));
+    } finally {
+      busy(false); ctl = null;
+    }
+  }
+  function showErr(t) { $("err").textContent = t; $("err").hidden = false; }
+
+  $("go").onclick = () => {
+    const f = mode === "carro" ? $("f-carro") : $("f-avion");
+    if (!f.reportValidity()) return;
+    $("ex-note").hidden = true;
+    ask(firstMessage(), true);
+  };
+  $("send").onclick = () => {
+    const t = $("followup").value.trim();
+    if (!t || !turns.length) return;
+    $("followup").value = "";
+    ask(t, false);
+  };
+  $("followup").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("send").click(); } });
+  $("stop").onclick = () => ctl?.abort();
+
+  // ---------- Arranque ----------
+  if (window.claude?.use) {
+    window.claude.use("sample").then(async (s) => {
+      sample = s;
+      if (!s) { $("go").disabled = true; showErr("Abre esta página dentro de Claude para armar el plan."); return; }
+      const lim = await s.limits().catch(() => null);
+      toolsOk = Boolean(lim?.tools);
+    });
+  } else {
+    $("go").disabled = true;
+    showErr("Abre esta página dentro de Claude para armar el plan.");
+  }
+})();
+</script>
