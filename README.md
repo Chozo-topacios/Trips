@@ -1,32 +1,39 @@
-# 🧭 Ruta: agente web de planificación de viajes
+# 🧭 Planificador de viaje
 
-Agente conversacional (Claude + herramientas) para planear viajes **en carro** con la **Chery iCAR 03T** o **en avión**.
+Guías de viaje completas, día por día, en **carro** (Chery iCAR 03T de rango extendido) o en **avión**: siempre con naturaleza, pueblos y sitios turísticos, más enlaces a mapas, fotos e información, gráfica del perfil de altura de la ruta y del presupuesto. Todo se puede editar, mover, borrar o complementar con Claude.
 
-```
-[INICIO] → ¿Carro o avión?
-   ├─ CARRO: origen/destino → ruta en Google Maps (y alternativas) → peajes y estado vial
-   │         → gestión de energía iCAR 03T → sitios turísticos en ruta → hospedajes → presupuesto
-   └─ AVIÓN: destino y días → imperdibles + itinerario → zonas para hospedarse
-             → movilidad local → presupuesto
-```
+Hay dos formas de usarla:
+
+| | Artifact en Claude | Sitio abierto (este repositorio) |
+|---|---|---|
+| ¿Necesita cuenta de Claude quien la abre? | Sí | **No** |
+| ¿Quién paga el uso de Claude? | Cada visitante, con su cuenta | **El dueño**, con su API key |
+| ¿Dónde se guardan los viajes? | En la cuenta de Claude (se sincronizan) | En el navegador de cada visitante |
+
+La página es la misma en ambos casos: `artifact/planificador.html`. El servidor la envuelve y le da un reemplazo del runtime de Claude (`public/claude-shim.js`) que manda las peticiones a `/api/json`.
 
 ## Cómo funciona
 
-| Pieza | Archivo | Qué hace |
-|---|---|---|
-| Interfaz web | `public/` | Asistente por pasos (carro/avión → formulario) y luego chat con respuestas en streaming |
-| Servidor | `src/server.js` | Express + SSE; guarda la conversación por sesión en memoria |
-| Agente | `src/agent.js` | Ciclo de herramientas con Claude (`claude-opus-5-5`), con búsqueda y lectura web |
-| Google Maps | `src/google.js` | `calcular_ruta` (Routes API: rutas, alternativas, duración con tráfico y peajes) y `buscar_lugares` (Places API: hoteles, atracciones y cargadores EV) |
-| Energía iCAR 03T | `src/vehicle.js` | `plan_energia`: consumo según distancia, desnivel, velocidad y A/C; con qué % salir y dónde y hasta qué % cargar |
+| Archivo | Qué hace |
+|---|---|
+| `artifact/planificador.html` | La aplicación completa (interfaz, guías, edición, gráficas, guardado) |
+| `public/claude-shim.js` | Hace que la página use el servidor propio en vez de la cuenta de Claude del visitante |
+| `src/server.js` | Sirve la página y el endpoint `/api/json`, que llama a Claude con tu API key; límite de peticiones por IP |
+| `render.yaml` | Configuración para publicarla en Render |
 
-**Sobre la iCAR 03T:** es 100 % eléctrica, así que no hay gasolina que gestionar. El plan te dice si basta con salir al 100 % o qué paradas de carga rápida hacer (cargando hasta ~80 %, que es donde la carga DC es eficiente). Los datos del vehículo (batería, consumo, potencia de carga) son valores de referencia. Ajústalos en **⚡ Mi vehículo** con la ficha técnica de tu versión.
+La guía se arma en pasos cortos (plan general y luego de a dos días) para que ninguna petición se pase del tiempo máximo.
 
-Los peajes se toman de Google cuando los tiene. Si no, el agente busca las tarifas oficiales (ANI, INVÍAS, concesionarias) y cita la fuente.
+## Ponerla en línea (Render, gratis para empezar)
 
-## Puesta en marcha
+1. Crea una API key en https://console.anthropic.com y cárgale saldo.
+2. Entra a https://render.com con tu cuenta de GitHub.
+3. **New + → Blueprint**, elige este repositorio (rama con este código) y confirma.
+4. Cuando te lo pida, pega tu `ANTHROPIC_API_KEY`.
+5. Render te da una dirección como `https://planificador-de-viaje.onrender.com`: ese es el enlace para compartir.
 
-Requisitos: Node.js 20.6 o superior.
+En el plan gratis el servicio se "duerme" tras un rato sin visitas y la primera carga tarda cerca de un minuto.
+
+## Probar en tu computador
 
 ```bash
 npm install
@@ -36,10 +43,7 @@ npm install
 cp .env.example .env
 ```
 
-Edita `.env`:
-
-- `ANTHROPIC_API_KEY`: obligatoria.
-- `GOOGLE_MAPS_API_KEY`: opcional pero recomendada. Activa **Routes API** y **Places API (New)** en Google Cloud. Sin ella el agente usa la búsqueda web y te da el enlace de Google Maps igualmente.
+Pon tu `ANTHROPIC_API_KEY` en `.env` y luego:
 
 ```bash
 npm start
@@ -47,16 +51,18 @@ npm start
 
 Abre http://localhost:3000.
 
-### Variables opcionales
+## Variables
 
 | Variable | Por defecto | Uso |
 |---|---|---|
+| `ANTHROPIC_API_KEY` | — | Obligatoria |
 | `CLAUDE_MODEL` | `claude-opus-5-5` | Modelo |
-| `CLAUDE_EFFORT` | `medium` | `low` / `medium` / `high`: más esfuerzo da planes más completos pero más lentos y costosos |
+| `CLAUDE_EFFORT` | `medium` | `low` es más rápido y barato; `high`, más detallado |
+| `RATE_LIMIT_PER_HOUR` | `40` | Peticiones por IP por hora (una guía de 4 días usa unas 3) |
 | `PORT` | `3000` | Puerto |
 
-## Notas
+## Costos y cuidados
 
-- Si el modelo principal rechaza una solicitud, la API la reintenta automáticamente con otro modelo (`fallbacks: "default"`).
-- Las conversaciones viven en memoria: se pierden al reiniciar el servidor.
-- Precios, peajes y horarios son estimaciones: verifícalos antes de viajar.
+- Cada guía y cada "Complementar" consumen tu saldo de la API. Pon un **límite de gasto mensual** en la consola de Anthropic.
+- El límite por IP evita abusos básicos, pero cualquiera con el enlace puede usarla: comparte el enlace con cuidado.
+- Las guías salen del conocimiento de Claude, sin consulta en vivo: precios, horarios y peajes son aproximados.

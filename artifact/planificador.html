@@ -295,7 +295,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
         }, (e) => { clearTimeout(timer); onError(e.code === "revoked" ? "Ya no tienes acceso a tus viajes en esta página." : "No se pudieron cargar tus viajes."); });
       } else {
         this.kind = "local";
-        onError("Tus viajes se guardan en este navegador. Para verlos en otro dispositivo, ábrela con la cuenta de quien la creó.");
+        onError("Tus viajes se guardan en este navegador: no se pasan a otros dispositivos, y si borras los datos del navegador se pierden.");
         onChange(this.readLocal(), false);
       }
     },
@@ -305,7 +305,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
       this.kind = "local"; try { this.unsub?.(); } catch {}
       try { localStorage.setItem("planificador.local", "1"); } catch {}
       const m = this.readLocal(); current.forEach((v, k) => m.set(k, clone(v))); this.writeLocal(m);
-      this.onError?.("Tus viajes se guardan en este navegador. Para verlos en otro dispositivo, ábrela con la cuenta de quien la creó.");
+      this.onError?.("Tus viajes se guardan en este navegador: no se pasan a otros dispositivos, y si borras los datos del navegador se pierden.");
     },
     readLocal() { try { return new Map(Object.entries(JSON.parse(localStorage.getItem("planificador.viajes") || "{}"))); } catch { return new Map(); } },
     writeLocal(m) { try { localStorage.setItem("planificador.viajes", JSON.stringify(Object.fromEntries(m))); } catch {} },
@@ -473,6 +473,8 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     refused: "Claude no pudo responder esa solicitud. Prueba a escribirla distinto.",
     invalid_json: "La respuesta llegó incompleta. Intenta otra vez.",
     prompt_too_large: "La guía es muy grande para esta petición. Pide un cambio más puntual.",
+    server_key: "El servicio no está configurado correctamente. Avísale a quien te compartió la página.",
+    overloaded: "Claude está muy ocupado en este momento. Intenta de nuevo en unos minutos.",
   }[code] || `Se cortó la conexión con Claude. Intenta otra vez${code ? ` (código: ${code})` : ""}.`);
 
   // Arma las actividades de los días indicados, de a dos días por petición. Guarda cada tanda al llegar.

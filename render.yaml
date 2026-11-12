@@ -1,0 +1,16 @@
+# Despliegue en Render (render.com): New + → Blueprint → elegir este repositorio.
+services:
+  - type: web
+    name: planificador-de-viaje
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false # Render la pide al crear el servicio; no se guarda en el repositorio
+      - key: NODE_ENV
+        value: production
+      - key: RATE_LIMIT_PER_HOUR
+        value: "40"
