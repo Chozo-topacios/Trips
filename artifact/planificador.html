@@ -3,32 +3,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: una columna tipo "hoja de ruta"; las paradas se dibujan como una carretera vertical con hitos de km. Señalética vial: verde de autopista + ámbar. */
+/* Layout: una sola columna. Tres vistas (Mis viajes · Nuevo viaje · Itinerario). El itinerario es una línea de tiempo por día con encabezados tipo señal de carretera. */
 :root {
-  --bg: #f3f5f2;
+  --bg: #f2f4f1;
   --surface: #ffffff;
-  --ink: #18231e;
-  --muted: #5b6a62;
-  --line: #d9e0db;
+  --ink: #17221d;
+  --muted: #5a6961;
+  --line: #d8dfda;
   --road: #13664f;
   --road-ink: #ffffff;
-  --amber: #b86e0b;
-  --soft: #e5efe9;
+  --amber: #a9650a;
+  --soft: #e4eee8;
   --danger: #a2321f;
-  --asphalt: #3a4540;
   --f-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
   --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #101613; --surface: #17201c; --ink: #e5ece7; --muted: #9aaba2; --line: #2a3832;
-    --road: #3fb58f; --road-ink: #06231a; --amber: #e6a145; --soft: #1d2d26; --danger: #f08a75; --asphalt: #4b5a53;
+    --bg: #0f1512; --surface: #161f1b; --ink: #e4ebe6; --muted: #98a9a0; --line: #293730;
+    --road: #3fb58f; --road-ink: #05231a; --amber: #e6a145; --soft: #1c2c25; --danger: #f08a75;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #101613; --surface: #17201c; --ink: #e5ece7; --muted: #9aaba2; --line: #2a3832;
-  --road: #3fb58f; --road-ink: #06231a; --amber: #e6a145; --soft: #1d2d26; --danger: #f08a75; --asphalt: #4b5a53;
+  --bg: #0f1512; --surface: #161f1b; --ink: #e4ebe6; --muted: #98a9a0; --line: #293730;
+  --road: #3fb58f; --road-ink: #05231a; --amber: #e6a145; --soft: #1c2c25; --danger: #f08a75;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -38,415 +37,628 @@ body {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 760px; margin: 0 auto; padding-block: 24px 64px; display: flex; flex-direction: column; gap: 18px; }
-h1, h2, h3, .sign, .q { font-family: var(--f-display); text-wrap: balance; }
-h1 { margin: 8px 0 0; font-size: 34px; line-height: 1.05; }
-h2 { margin: 0; font-size: 22px; font-weight: 600; }
-.lead { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+.wrap { max-width: 780px; margin: 0 auto; padding-block: 20px 72px; display: flex; flex-direction: column; gap: 16px; }
+h1, h2, h3, .sign { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h1 { font-size: 32px; line-height: 1.05; }
+h2 { font-size: 22px; font-weight: 600; }
+h3 { font-size: 18px; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .sign {
-  display: inline-flex; background: var(--road); color: var(--road-ink); border-radius: 6px; padding: 3px 10px;
-  font-weight: 600; font-size: 13px; letter-spacing: .8px; text-transform: uppercase;
+  display: inline-flex; background: var(--road); color: var(--road-ink); border-radius: 6px; padding: 2px 10px;
+  font-weight: 600; font-size: 12px; letter-spacing: .8px; text-transform: uppercase;
   border: 2px solid var(--road-ink); outline: 2px solid var(--road);
 }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.btn {
+  font: inherit; font-weight: 600; border-radius: 8px; padding: 10px 16px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: var(--ink); border: 1px solid var(--line);
+}
+.btn.primary { background: var(--road); color: var(--road-ink); border-color: var(--road); }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn.sm { padding: 6px 10px; font-size: 13px; }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn.link { align-self: flex-start; border: 0; padding: 0; color: var(--road); font-weight: 600; font-size: 13px; }
+:focus-visible { outline: 2px solid var(--road); outline-offset: 2px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%;
+}
+textarea { resize: vertical; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; min-width: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .mode {
   font: inherit; font-family: var(--f-display); font-size: 20px; font-weight: 600; cursor: pointer; border-radius: 10px; padding: 12px;
   border: 2px solid var(--line); background: var(--bg); color: var(--ink);
 }
 .mode[aria-pressed="true"] { border-color: var(--road); background: var(--soft); }
-.big { display: flex; flex-direction: column; gap: 6px; }
-.big label { font-family: var(--f-display); font-size: 20px; font-weight: 600; }
-.big input { font-size: 20px; padding: 12px 14px; }
-.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
-label.sm { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; min-width: 0; }
-input, select, textarea {
-  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%;
-}
-:focus-visible { outline: 2px solid var(--road); outline-offset: 2px; }
-details summary { cursor: pointer; font-size: 14px; color: var(--muted); }
-details[open] summary { margin-bottom: 10px; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.btn {
-  font: inherit; font-weight: 600; border-radius: 8px; padding: 11px 18px; cursor: pointer; text-decoration: none;
-  display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--ink); border: 1px solid var(--line);
-}
-.btn.primary { background: var(--road); color: var(--road-ink); border-color: var(--road); font-size: 16px; }
-.btn.primary:disabled { opacity: .55; cursor: wait; }
-.btn.link { border-color: var(--road); color: var(--road); }
-.err { color: var(--danger); font-size: 14px; margin: 0; }
+.big input { font-size: 19px; padding: 12px 14px; }
+.err { color: var(--danger); font-size: 14px; }
+.notice { font-size: 13px; color: var(--muted); border-left: 3px solid var(--amber); padding: 2px 10px; }
 .status { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 8px; }
 .status::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--road); border-right-color: transparent; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .status::before { animation: none; } }
-.notice { font-size: 13px; color: var(--muted); border-left: 3px solid var(--amber); padding: 2px 10px; margin: 0; }
 
-/* Resumen */
+/* Mis viajes */
+.trips { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.trip {
+  font: inherit; text-align: left; cursor: pointer; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.trip:hover { border-color: var(--road); }
+.trip .kind { font-size: 12px; font-weight: 600; color: var(--road); text-transform: uppercase; letter-spacing: .5px; }
+.trip h3 { font-size: 20px; overflow-wrap: anywhere; }
+.trip .meta { font-size: 13px; color: var(--muted); }
+.empty { text-align: center; padding: 28px 12px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.empty .road { width: 100%; max-width: 280px; height: 10px; border-radius: 5px; background: repeating-linear-gradient(90deg, var(--road) 0 24px, transparent 24px 36px); opacity: .5; }
+
+/* Itinerario */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
 .stats div { background: var(--soft); border-radius: 8px; padding: 8px 12px; min-width: 0; }
-.stats b { display: block; font-family: var(--f-display); font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stats b { display: block; font-family: var(--f-display); font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1.2; overflow-wrap: anywhere; }
 .stats span { font-size: 12px; color: var(--muted); }
-
-/* Carretera de paradas */
-.route { list-style: none; margin: 0; padding: 0; position: relative; }
-#head, #body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.route::before { content: ""; position: absolute; left: 55px; top: 8px; bottom: 8px; width: 6px; background: var(--asphalt); border-radius: 3px; }
-.route::after { content: ""; position: absolute; left: 57.5px; top: 8px; bottom: 8px; width: 1px; background: repeating-linear-gradient(var(--bg) 0 8px, transparent 8px 16px); }
-.stop { position: relative; display: grid; grid-template-columns: 38px 24px 1fr; gap: 10px; padding: 8px 0; align-items: start; }
-.km { font-family: var(--f-display); font-weight: 600; font-size: 14px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 3px; }
-.dot { width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 4px solid var(--road); margin-top: 3px; position: relative; z-index: 1; }
-.stop.end .dot { background: var(--road); }
-.stop.must .dot { border-color: var(--amber); }
-.card { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.card h3 { margin: 0; font-size: 19px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.tag { font-family: var(--f-body); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; padding: 1px 7px; border-radius: 4px; background: var(--soft); color: var(--road); }
-.tag.must { background: var(--amber); color: var(--surface); }
-.card p { margin: 0; }
-.card .meta { font-size: 13px; color: var(--muted); }
-.card a { font-size: 13px; color: var(--road); font-weight: 600; }
-.card label.pick { flex-direction: row; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
-.card label.pick input { width: auto; }
-ul.tips { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
-
-/* Avión */
+.day { display: flex; flex-direction: column; gap: 10px; }
+.dayhead { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.dayhead .sign { font-size: 13px; }
+.dayhead h3 { font-size: 20px; }
+.leg { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; background: var(--soft); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.leg b { font-family: var(--f-display); font-size: 17px; }
+.acts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.act { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start; }
+.act:first-child { border-top: 0; }
+.act .h { font-family: var(--f-display); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--road); padding-top: 1px; }
+.act .c { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.act .t { font-weight: 600; }
+.act .d { font-size: 14px; }
+.act .m { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.act .m a { color: var(--road); font-weight: 600; }
+.tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; padding: 0 6px; border-radius: 4px; background: var(--soft); color: var(--road); }
+.tag.mine { background: var(--amber); color: var(--surface); }
+.x { font: inherit; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+.x:hover { color: var(--danger); background: var(--soft); }
+.sleep { font-size: 14px; border-left: 3px solid var(--road); padding: 4px 10px; }
+.addform { display: grid; grid-template-columns: 90px 1fr auto; gap: 8px; }
 .tbl { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
 th, td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
 th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
-td.n, th.n { text-align: right; white-space: nowrap; }
+td.n { text-align: right; white-space: nowrap; }
 tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--ink); }
-.filters { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: inherit; font-size: 13px; border-radius: 999px; padding: 5px 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--road); color: var(--road-ink); border-color: var(--road); }
-.sites { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
-.site { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; background: var(--bg); }
-.site h3 { margin: 0; font-size: 18px; font-weight: 600; }
-.site p { margin: 0; font-size: 14px; }
-.site .meta { font-size: 12px; color: var(--muted); }
-.site a { font-size: 13px; color: var(--road); font-weight: 600; margin-top: auto; }
-
-/* Chat */
-.thread { display: flex; flex-direction: column; gap: 12px; }
-.you { align-self: flex-end; background: var(--road); color: var(--road-ink); border-radius: 12px 12px 2px 12px; padding: 8px 12px; max-width: 85%; white-space: pre-wrap; }
-.md { min-width: 0; overflow-wrap: anywhere; }
-.md p { margin: 6px 0; } .md ul, .md ol { margin: 6px 0; padding-left: 20px; }
-.md h3, .md h4 { font-family: var(--f-display); margin: 10px 0 4px; }
-.ask { display: flex; gap: 8px; }
-.ask textarea { resize: vertical; min-height: 44px; }
-@media (max-width: 480px) { h1 { font-size: 28px; } .ask { flex-direction: column; } }
+ul.tips { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.log li { border-left: 3px solid var(--line); padding-left: 10px; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); border-radius: 10px; padding: 10px 14px; display: flex; gap: 12px; align-items: center; z-index: 20;
+  max-width: calc(100% - 32px); font-size: 14px;
+}
+.toast button { font: inherit; font-weight: 600; background: none; border: 0; color: var(--bg); text-decoration: underline; cursor: pointer; }
+@media (max-width: 480px) {
+  h1 { font-size: 27px; }
+  .act { grid-template-columns: 44px 1fr auto; }
+  .addform { grid-template-columns: 80px 1fr; }
+  .addform .btn { grid-column: 1 / -1; }
+}
 </style>
 
 <div class="wrap">
-  <header>
-    <span class="sign">Carro · Avión</span>
-    <h1>Planificador de viaje</h1>
-    <p class="lead">Dime hasta dónde vas. En carro te sugiero las paradas que valen la pena en el camino; en avión, el presupuesto y todos los sitios para visitar.</p>
+  <header class="top">
+    <div>
+      <span class="sign">Carro · Avión</span>
+      <h1 style="margin-top:8px">Planificador de viaje</h1>
+    </div>
   </header>
 
-  <section class="panel">
-    <div class="modes" role="group" aria-label="Tipo de viaje">
-      <button class="mode" id="m-carro" type="button" aria-pressed="true">🚗 Carro</button>
-      <button class="mode" id="m-avion" type="button" aria-pressed="false">✈️ Avión</button>
-    </div>
-
-    <div class="big">
-      <label for="destino" id="destino-lbl">¿Hasta dónde vas?</label>
-      <input id="destino" placeholder="Ej. Salento, Villa de Leyva, Cartagena…" autocomplete="off" enterkeyhint="go">
-    </div>
-
-    <details id="mas">
-      <summary>Más detalles (opcional)</summary>
-      <div class="row">
-        <label class="sm">Salgo desde<input id="origen" value="Bogotá"></label>
-        <label class="sm">Días<input id="dias" type="number" min="1" placeholder="—"></label>
-        <label class="sm">Viajeros<input id="viajeros" type="number" min="1" value="2"></label>
-        <label class="sm">Gustos<input id="gustos" placeholder="pueblos, comida, naturaleza…"></label>
+  <!-- Vista: Mis viajes -->
+  <section id="v-list">
+    <div class="panel">
+      <div class="top">
+        <h2>Mis viajes</h2>
+        <button class="btn primary" id="new" type="button">＋ Nuevo viaje</button>
       </div>
-    </details>
-
-    <div class="actions">
-      <button class="btn primary" id="go" type="button">Sugerir paradas</button>
-      <button class="btn" id="stop" type="button" hidden>Detener</button>
-    </div>
-    <p class="err" id="err" hidden></p>
-  </section>
-
-  <!-- Ejemplo visible antes de la primera búsqueda -->
-  <section class="panel" id="out" aria-live="polite">
-    <div id="head"></div>
-    <div id="body"></div>
-  </section>
-
-  <section class="panel" id="chat" hidden>
-    <h2>¿Algo más?</h2>
-    <div class="thread" id="thread"></div>
-    <div class="ask">
-      <textarea id="followup" placeholder="Ej. ‘¿dónde almuerzo?’, ‘quiero ir por otra vía’, ‘agrega una noche más’"></textarea>
-      <button class="btn primary" id="send" type="button">Preguntar</button>
+      <p class="status" id="list-loading">Cargando tus viajes…</p>
+      <p class="notice" id="list-note" hidden></p>
+      <div class="trips" id="trips"></div>
+      <div class="empty" id="empty" hidden>
+        <div class="road" aria-hidden="true"></div>
+        <h3>Aún no tienes viajes guardados</h3>
+        <p class="muted">Crea uno: te armo un itinerario día por día y queda guardado aquí para verlo, borrarlo o complementarlo cuando quieras, desde el celular o el computador.</p>
+        <button class="btn primary" id="new2" type="button">Planear mi primer viaje</button>
+      </div>
     </div>
   </section>
+
+  <!-- Vista: Nuevo viaje -->
+  <section id="v-new" hidden>
+    <div class="panel">
+      <div class="top"><h2>Nuevo viaje</h2><button class="btn sm" type="button" data-go="list">← Mis viajes</button></div>
+      <div class="modes" role="group" aria-label="Tipo de viaje">
+        <button class="mode" id="m-carro" type="button" aria-pressed="true">🚗 Carro</button>
+        <button class="mode" id="m-avion" type="button" aria-pressed="false">✈️ Avión</button>
+      </div>
+      <label class="f big" for="n-destino"><span style="font-family:var(--f-display);font-size:20px;font-weight:600;color:var(--ink)">¿A dónde vas?</span>
+        <input id="n-destino" placeholder="Ej. Salento, Villa de Leyva, Cartagena" autocomplete="off">
+      </label>
+      <div class="grid">
+        <label class="f">Salgo desde<input id="n-origen" value="Bogotá"></label>
+        <label class="f">Fecha de inicio<input id="n-fecha" type="date"></label>
+        <label class="f">Días<input id="n-dias" type="number" min="1" max="21" value="3"></label>
+        <label class="f">Viajeros<input id="n-viajeros" type="number" min="1" value="2"></label>
+        <label class="f">Ritmo<select id="n-ritmo"><option>Moderado</option><option>Tranquilo</option><option>Intenso</option></select></label>
+        <label class="f" id="regreso-wrap">Regreso<select id="n-regreso"><option>Ida y vuelta en carro</option><option>Solo ida</option></select></label>
+        <label class="f">Presupuesto (opcional)<input id="n-presu" placeholder="Ej. COP 3.000.000"></label>
+      </div>
+      <label class="f">Qué te gusta (opcional)<input id="n-gustos" placeholder="pueblos, naturaleza, comida típica, historia, playa…"></label>
+      <div class="actions">
+        <button class="btn primary" id="create" type="button">Armar itinerario</button>
+        <button class="btn" id="cancel-gen" type="button" hidden>Detener</button>
+      </div>
+      <p class="status" id="gen-status" hidden></p>
+      <p class="err" id="new-err" hidden></p>
+      <p class="notice">Claude arma el plan con lo que sabe, sin consultar internet en vivo: confirma precios, horarios y peajes antes de viajar.</p>
+    </div>
+  </section>
+
+  <!-- Vista: Itinerario -->
+  <section id="v-trip" hidden></section>
 </div>
+
+<div class="toast" id="toast" hidden><span id="toast-t"></span><button type="button" id="toast-undo">Deshacer</button></div>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-  let mode = "carro", sample = null, ctl = null, last = null, turns = [];
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-  try { const o = localStorage.getItem("ruta.origen"); if (o) $("origen").value = o; } catch {}
+  const state = { trips: new Map(), view: "list", currentId: null, mode: "carro", sample: null, ctl: null };
 
+  // ================= Almacenamiento =================
+  // Guarda en el espacio privado del usuario (db). Si no está disponible, usa el navegador.
+  const store = {
+    kind: null, col: null, unsub: null, queues: new Map(),
+    async init(onChange, onError) {
+      let db = null, user = null;
+      try { [db, user] = await Promise.all([claude.use("db"), claude.use("user")]); } catch {}
+      const id = user ? await user.id().catch(() => null) : null;
+      if (db && id) {
+        this.kind = "db";
+        this.col = db.collection("data/users/" + id);
+        const timer = setTimeout(() => onError("Tus viajes tardan en cargar. Revisa tu conexión."), 10000);
+        this.unsub = this.col.onSnapshot((snap) => {
+          if (!snap.metadata.fromCache) clearTimeout(timer);
+          const m = new Map();
+          snap.docs.forEach((d) => { const v = d.data(); if (v && v.tipo === "viaje") m.set(d.id, clone(v)); });
+          onChange(m, snap.metadata.fromCache);
+        }, (e) => { clearTimeout(timer); onError(e.code === "revoked" ? "Ya no tienes acceso a tus viajes en esta página." : "No se pudieron cargar tus viajes."); });
+      } else {
+        this.kind = "local";
+        onError("Tus viajes se guardarán solo en este navegador (no se sincronizan con otros dispositivos).");
+        onChange(this.readLocal(), false);
+        this.onLocal = onChange;
+      }
+    },
+    readLocal() {
+      try { const o = JSON.parse(localStorage.getItem("planificador.viajes") || "{}"); return new Map(Object.entries(o)); } catch { return new Map(); }
+    },
+    writeLocal(m) { try { localStorage.setItem("planificador.viajes", JSON.stringify(Object.fromEntries(m))); } catch {} this.onLocal?.(new Map(m), false); },
+    // Una escritura a la vez por documento.
+    enqueue(id, fn) {
+      const prev = this.queues.get(id) || Promise.resolve();
+      const next = prev.catch(() => {}).then(fn);
+      this.queues.set(id, next);
+      return next;
+    },
+    save(trip) {
+      trip.actualizado = new Date().toISOString();
+      if (this.kind === "db") return this.enqueue(trip.id, () => this.col.doc(trip.id).set(trip));
+      const m = this.readLocal(); m.set(trip.id, trip); this.writeLocal(m); return Promise.resolve();
+    },
+    remove(id) {
+      if (this.kind === "db") return this.enqueue(id, () => this.col.doc(id).delete());
+      const m = this.readLocal(); m.delete(id); this.writeLocal(m); return Promise.resolve();
+    },
+  };
+  const saveErr = (e) => toast(e?.code === "quota_exceeded" ? "No hay espacio para más viajes: borra alguno." : "No se pudo guardar el cambio. Intenta de nuevo.");
+
+  // ================= Navegación =================
+  function go(view, id) {
+    state.view = view; state.currentId = id ?? null;
+    $("v-list").hidden = view !== "list";
+    $("v-new").hidden = view !== "new";
+    $("v-trip").hidden = view !== "trip";
+    if (view === "trip") renderTrip();
+    window.scrollTo({ top: 0 });
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+  $("new").onclick = () => go("new");
+  $("new2").onclick = () => go("new");
+
+  // ================= Utilidades de formato =================
+  const hoyISO = () => new Date().toISOString().slice(0, 10);
+  const fechaDia = (inicio, i) => {
+    if (!inicio) return "";
+    const d = new Date(inicio + "T12:00:00"); d.setDate(d.getDate() + i);
+    return d.toLocaleDateString("es-CO", { weekday: "short", day: "numeric", month: "short" });
+  };
+  const money = (n, cur) => (typeof n === "number" && isFinite(n)) ? `${cur === "USD" ? "US$" : "$"}${Math.round(n).toLocaleString("es-CO")}` : "—";
+  const mapsSearch = (q) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+  const mapsRoute = (o, d) => "https://www.google.com/maps/dir/?" + new URLSearchParams({ api: "1", origin: o, destination: d, travelmode: "driving" }).toString();
+  const sumBudget = (p) => (p.presupuesto || []).reduce((s, x) => s + (Number(x.total) || 0), 0);
+
+  // ================= Mis viajes =================
+  function renderList() {
+    const box = $("trips"); box.replaceChildren();
+    const list = [...state.trips.values()].sort((a, b) => (b.actualizado || "").localeCompare(a.actualizado || ""));
+    $("empty").hidden = list.length > 0;
+    list.forEach((t) => {
+      const b = el("button", "trip"); b.type = "button";
+      b.append(el("span", "kind", t.modo === "carro" ? "🚗 En carro" : "✈️ En avión"));
+      b.append(el("h3", null, t.destino));
+      const dias = t.plan?.dias?.length || t.dias;
+      b.append(el("span", "meta", [t.fecha_inicio && fechaDia(t.fecha_inicio, 0), `${dias} ${dias == 1 ? "día" : "días"}`, `${t.viajeros} viajeros`].filter(Boolean).join(" · ")));
+      b.append(el("span", "meta", `Desde ${t.origen}`));
+      b.onclick = () => go("trip", t.id);
+      box.append(b);
+    });
+  }
+
+  // ================= Nuevo viaje =================
   function setMode(m) {
-    mode = m;
+    state.mode = m;
     $("m-carro").setAttribute("aria-pressed", String(m === "carro"));
     $("m-avion").setAttribute("aria-pressed", String(m === "avion"));
-    $("destino-lbl").textContent = m === "carro" ? "¿Hasta dónde vas?" : "¿A dónde viajas?";
-    $("go").textContent = m === "carro" ? "Sugerir paradas" : "Ver presupuesto y sitios";
+    $("regreso-wrap").hidden = m !== "carro";
   }
   $("m-carro").onclick = () => setMode("carro");
   $("m-avion").onclick = () => setMode("avion");
+  try { const o = localStorage.getItem("planificador.origen"); if (o) $("n-origen").value = o; } catch {}
 
-  const mapsSearch = (q) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
-  const mapsRoute = (o, d, w) => {
-    const p = new URLSearchParams({ api: "1", origin: o, destination: d, travelmode: "driving" });
-    if (w.length) p.set("waypoints", w.slice(0, 9).join("|"));
-    return "https://www.google.com/maps/dir/?" + p.toString();
-  };
-  const money = (n, cur) => (typeof n === "number" && isFinite(n)) ? `${cur === "USD" ? "US$" : "$"}${Math.round(n).toLocaleString("es-CO")}` : (n ?? "—");
+  const FORMA = `{"titulo":"nombre corto del viaje","resumen":"2 frases sobre el viaje","moneda":"COP",
+"dias":[{"titulo":"tema del día","tramo":null,"actividades":[{"hora":"08:00","titulo":"qué hacer","detalle":"1-2 frases concretas","lugar":"nombre del lugar real, municipio","tipo":"traslado|visita|comida|naturaleza|cultura|compras|descanso|noche","costo":"aprox. por persona o gratis"}],"dormir":{"donde":"zona o tipo de hospedaje","por_que":"breve","rango_noche":"$150.000–$250.000"}}],
+"presupuesto":[{"concepto":"Hospedaje 3 noches","detalle":"breve","total":900000}],
+"consejos":["3 a 5 consejos prácticos"],"energia":["solo en carro: 3 consejos de batería y gasolina"]}
+"tramo" (solo en días con trayecto en carro): {"desde":"ciudad","hasta":"ciudad","km":300,"horas":"6 h 30 min"}.`;
 
-  // ---------- Prompts ----------
-  const hoy = () => new Date().toISOString().slice(0, 10);
-  function carPrompt(o, d, dias, viaj, gustos) {
-    return `Eres un experto en viajes por carretera (especialmente en Colombia). Fecha de hoy: ${hoy()}.
-Viaje en carro de "${o}" a "${d}". ${dias ? `Duración: ${dias} días.` : ""} Viajeros: ${viaj}. ${gustos ? `Gustos: ${gustos}.` : ""}
-El carro es una Chery iCAR 03T de RANGO EXTENDIDO (motor eléctrico con batería + generador a gasolina): NO necesita parar a cargar, puede seguir con gasolina. Las paradas son por turismo, comida y descanso, no por carga.
-
-Sugiere la ruta más recomendada y las paradas que realmente valen la pena en el camino (pueblos, miradores, gastronomía típica, naturaleza, sitios históricos), en orden desde el origen, con su km aproximado. Entre 4 y 9 paradas según la distancia, sin desviarse más de ~30 min de la ruta salvo que valga mucho la pena (dilo). Incluye al menos una buena opción para almorzar. Si el trayecto es de más de 7 h, sugiere dónde dormir. No inventes lugares: usa solo sitios reales y conocidos.
+  function genPrompt(t) {
+    const carro = t.modo === "carro";
+    return `Eres un planificador de viajes experto (especialmente Colombia y Latinoamérica). Hoy es ${hoyISO()}.
+Arma un ITINERARIO DÍA POR DÍA realista y concreto para este viaje:
+- Modo: ${carro ? "carro" : "avión"}
+- Origen: ${t.origen}
+- Destino: ${t.destino}
+- Fecha de inicio: ${t.fecha_inicio || "no definida"}
+- Días: ${t.dias} (exactamente ${t.dias} elementos en "dias")
+- Viajeros: ${t.viajeros}
+- Ritmo: ${t.ritmo}
+${t.presupuesto ? `- Presupuesto: ${t.presupuesto}\n` : ""}${t.gustos ? `- Gustos: ${t.gustos}\n` : ""}${carro ? `- Regreso: ${t.regreso}\n` : ""}
+Reglas:
+- Usa solo lugares reales y conocidos. Si no estás seguro de un hotel o restaurante concreto, describe la zona o el tipo (ej. "restaurante de comida típica en la plaza principal").
+- Horarios realistas: traslados, desayuno, almuerzo, cena y descanso. Entre 4 y 7 actividades por día según el ritmo.
+${carro ? `- El carro es una Chery iCAR 03T de RANGO EXTENDIDO (batería + generador a gasolina): no necesita paradas de carga.
+- El día 1 incluye el trayecto en carro (llena "tramo") y, como actividades, las paradas turísticas que realmente valen la pena en el camino (pueblos, miradores, comida típica). ${t.regreso.startsWith("Ida y vuelta") ? `El último día es el regreso en carro (llena "tramo"), con 1 o 2 paradas distintas a las de ida.` : ""}
+- Incluye los peajes aproximados (automóvil categoría I) y la gasolina/energía en el presupuesto.` : `- El día 1 empieza con la llegada al aeropuerto y el traslado; el último día termina con la salida.
+- Incluye vuelos de referencia en el presupuesto.`}
+- Presupuesto total para el grupo en COP si el origen está en Colombia; si no, en USD. Cifras aproximadas como números.
 
 Responde SOLO con un objeto JSON con esta forma:
-{"via":"vía principal, ej. Autopista Medellín – Bogotá por Honda","distancia_km":415,"tiempo_conduccion":"8 h 30 min","peajes":{"cantidad":6,"total_aprox_cop":120000,"nota":"tarifas aprox. automóvil categoría I"},"paradas":[{"nombre":"Guaduas","municipio":"Guaduas, Cundinamarca","km":120,"tipo":"pueblo","por_que":"1 frase concreta de por qué parar","que_hacer":"qué ver o comer","tiempo_sugerido":"45 min","imperdible":true,"desvio":"sobre la vía"}],"dormir":"null o dónde pasar la noche y por qué","energia":["3 o 4 consejos breves para manejar batería y gasolina en ESTA ruta (salir con batería al 100% y tanque lleno, usar modo eléctrico en ciudad y bajadas, modo de conservar batería antes de subidas largas, cargar en el hotel si hay toma)"],"consejos_via":["2 o 3 consejos de la vía: estado, obras, horas de tráfico, clima"]}
-"tipo" es uno de: pueblo, mirador, comida, naturaleza, historia, descanso. Las cifras son aproximadas.`;
-  }
-  function airPrompt(o, d, dias, viaj, gustos) {
-    return `Eres un experto en viajes. Fecha de hoy: ${hoy()}.
-Viaje en avión${o ? ` desde "${o}"` : ""} a "${d}". Días: ${dias || "4 (asúmelo y dilo)"}. Viajeros: ${viaj}. ${gustos ? `Gustos: ${gustos}.` : ""}
-Arma un presupuesto completo para todo el grupo y una lista de TODOS los sitios turísticos que valen la pena (entre 12 y 20), del más imperdible al menos. Usa la moneda del lugar de origen si es Colombia (COP); si no, USD. No inventes lugares.
-
-Responde SOLO con un objeto JSON con esta forma:
-{"moneda":"COP","dias":4,"presupuesto":[{"concepto":"Vuelos ida y vuelta","detalle":"tarifa promedio en temporada media","total":1200000}],"total":5000000,"por_persona":2500000,"nota_presupuesto":"qué incluye y cómo ahorrar","sitios":[{"nombre":"Ciudad Amurallada","zona":"Centro","categoria":"historia","por_que":"1 frase concreta","tiempo":"medio día","costo":"gratis o precio aprox. por persona","imperdible":true}],"donde_dormir":[{"zona":"Getsemaní","por_que":"ambiente, precio","rango_noche":"$200.000–$400.000"}],"movilidad":["3 o 4 consejos: desde el aeropuerto, apps, transporte, seguridad"]}
-"categoria" es una de: historia, naturaleza, playa, cultura, comida, vida nocturna, compras, aventura. El presupuesto debe incluir vuelos, hospedaje, comidas, transporte local, entradas/tours y un imprevisto. Cifras aproximadas.`;
+${FORMA}`;
   }
 
-  // ---------- Render carro ----------
-  function renderCar(r, o, d) {
-    const head = $("head"), body = $("body");
-    head.replaceChildren(); body.replaceChildren();
-    const h = el("h2", null, `${o} → ${d}`);
-    const via = el("p", "lead", r.via ? `Por ${r.via}` : "");
-    const stats = el("div", "stats");
-    [[r.distancia_km ? `${r.distancia_km} km` : "—", "distancia"], [r.tiempo_conduccion || "—", "manejando, sin paradas"],
-     [String(r.paradas?.length ?? 0), "paradas sugeridas"],
-     [r.peajes?.total_aprox_cop ? money(r.peajes.total_aprox_cop) : "—", `${r.peajes?.cantidad ?? "?"} peajes, solo ida (aprox.)`]]
-      .forEach(([b, s]) => { const c = el("div"); c.append(el("b", null, b), el("span", null, s)); stats.append(c); });
-    head.append(h, via, stats);
-
-    const ol = el("ol", "route");
-    const mkStop = (km, cls, inner) => { const li = el("li", "stop " + cls); li.append(el("span", "km", km), el("span", "dot"), inner); ol.append(li); };
-    const start = el("div", "card"); start.append(el("h3", null, o)); start.append(el("p", "meta", "Salida: batería al 100 % y tanque lleno."));
-    mkStop("0", "end", start);
-    const paradas = Array.isArray(r.paradas) ? r.paradas : [];
-    paradas.forEach((p, i) => {
-      const c = el("div", "card");
-      const t = el("h3", null, p.nombre || "Parada");
-      if (p.imperdible) t.append(el("span", "tag must", "Imperdible"));
-      if (p.tipo) t.append(el("span", "tag", p.tipo));
-      c.append(t);
-      if (p.por_que) c.append(el("p", null, p.por_que));
-      if (p.que_hacer) c.append(el("p", "meta", "👉 " + p.que_hacer));
-      c.append(el("p", "meta", [p.tiempo_sugerido && `⏱ ${p.tiempo_sugerido}`, p.desvio && `↪ ${p.desvio}`].filter(Boolean).join(" · ")));
-      const a = el("a", null, "Ver en Google Maps"); a.href = mapsSearch(`${p.nombre}, ${p.municipio || ""}`); a.target = "_blank"; a.rel = "noopener";
-      const pick = el("label", "pick"); const cb = el("input"); cb.type = "checkbox"; cb.checked = true; cb.dataset.i = i; cb.id = "pick-" + i;
-      cb.onchange = updateRouteLink; pick.append(cb, document.createTextNode("Incluir en la ruta"));
-      const row = el("div", "actions"); row.style.gap = "14px"; row.append(a, pick); c.append(row);
-      mkStop(p.km != null ? String(Math.round(p.km)) : "·", p.imperdible ? "must" : "", c);
+  function normalize(plan) {
+    if (!plan || typeof plan !== "object" || !Array.isArray(plan.dias)) throw { code: "invalid_json" };
+    plan.dias.forEach((d) => {
+      d.actividades = (Array.isArray(d.actividades) ? d.actividades : []).map((a) => ({ ...a, id: a.id || uid() }));
     });
-    const end = el("div", "card"); end.append(el("h3", null, d));
-    if (r.dormir && r.dormir !== "null") end.append(el("p", "meta", "🛏 " + r.dormir));
-    mkStop(r.distancia_km ? String(r.distancia_km) : "", "end", end);
-    body.append(ol);
-
-    const act = el("div", "actions");
-    const route = el("a", "btn link", "🗺️ Abrir ruta con paradas en Google Maps"); route.id = "route-link"; route.target = "_blank"; route.rel = "noopener";
-    act.append(route); body.append(act);
-    function updateRouteLink() {
-      const w = [...body.querySelectorAll("input[type=checkbox]")].filter((x) => x.checked).map((x) => { const p = paradas[+x.dataset.i]; return `${p.nombre}, ${p.municipio || ""}`; });
-      route.href = mapsRoute(o, d, w);
-    }
-    updateRouteLink();
-
-    const sec = (title, items) => {
-      if (!Array.isArray(items) || !items.length) return;
-      body.append(el("h2", null, title)); const ul = el("ul", "tips"); items.forEach((t) => ul.append(el("li", null, String(t)))); body.append(ul);
-    };
-    sec("🔋⛽ Batería y gasolina", r.energia);
-    sec("🛣️ Sobre la vía", r.consejos_via);
-    body.append(el("p", "notice", (r.peajes?.nota ? r.peajes.nota + ". " : "") + "Sugerencias de Claude sin consulta en vivo: confirma horarios, precios y estado de la vía antes de salir."));
+    plan.presupuesto = Array.isArray(plan.presupuesto) ? plan.presupuesto : [];
+    return plan;
   }
 
-  // ---------- Render avión ----------
-  function renderAir(r, d) {
-    const head = $("head"), body = $("body");
-    head.replaceChildren(); body.replaceChildren();
-    const cur = r.moneda || "COP";
-    head.append(el("h2", null, `✈️ ${d}`));
-    const stats = el("div", "stats");
-    [[money(r.total, cur), `total ${cur} (aprox.)`], [money(r.por_persona, cur), "por persona"], [`${r.dias ?? "—"} días`, "duración"], [String(r.sitios?.length ?? 0), "sitios para visitar"]]
-      .forEach(([b, s]) => { const c = el("div"); c.append(el("b", null, b), el("span", null, s)); stats.append(c); });
-    head.append(stats);
-
-    body.append(el("h2", null, "Presupuesto"));
-    const wrap = el("div", "tbl"), t = el("table");
-    const thead = el("thead"); const hr = el("tr"); hr.append(el("th", null, "Concepto"), el("th", null, "Detalle"), el("th", "n", "Total")); thead.append(hr);
-    const tb = el("tbody");
-    (r.presupuesto || []).forEach((x) => { const tr = el("tr"); tr.append(el("td", null, x.concepto), el("td", null, x.detalle || ""), el("td", "n", money(x.total, cur))); tb.append(tr); });
-    const tot = el("tr", "total"); tot.append(el("td", null, "Total"), el("td", null, ""), el("td", "n", money(r.total, cur))); tb.append(tot);
-    t.append(thead, tb); wrap.append(t); body.append(wrap);
-    if (r.nota_presupuesto) body.append(el("p", "notice", r.nota_presupuesto));
-
-    body.append(el("h2", null, "Sitios turísticos"));
-    const sitios = Array.isArray(r.sitios) ? r.sitios : [];
-    const cats = [...new Set(sitios.map((s) => s.categoria).filter(Boolean))];
-    const filters = el("div", "filters"); const grid = el("div", "sites");
-    let current = "todos";
-    const draw = () => {
-      grid.replaceChildren();
-      sitios.filter((s) => current === "todos" || (current === "imperdibles" ? s.imperdible : s.categoria === current)).forEach((s) => {
-        const c = el("article", "site"); const h = el("h3", null, s.nombre);
-        c.append(h);
-        const tags = el("div", "filters"); if (s.imperdible) tags.append(el("span", "tag must", "Imperdible")); if (s.categoria) tags.append(el("span", "tag", s.categoria)); c.append(tags);
-        if (s.por_que) c.append(el("p", null, s.por_que));
-        c.append(el("p", "meta", [s.zona && `📍 ${s.zona}`, s.tiempo && `⏱ ${s.tiempo}`, s.costo && `💲 ${s.costo}`].filter(Boolean).join(" · ")));
-        const a = el("a", null, "Ver en Google Maps"); a.href = mapsSearch(`${s.nombre}, ${d}`); a.target = "_blank"; a.rel = "noopener"; c.append(a);
-        grid.append(c);
-      });
-    };
-    ["todos", "imperdibles", ...cats].forEach((k) => {
-      const b = el("button", "chip", k === "todos" ? "Todos" : k === "imperdibles" ? "Imperdibles" : k[0].toUpperCase() + k.slice(1));
-      b.type = "button"; b.setAttribute("aria-pressed", String(k === current));
-      b.onclick = () => { current = k; filters.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); draw(); };
-      filters.append(b);
+  async function askJSON(prompt, statusEl, label) {
+    state.ctl = new AbortController();
+    let seen = 0;
+    const r = await state.sample.json(prompt, {
+      signal: state.ctl.signal, modelTier: "default", cache: false,
+      onText: ({ text }) => {
+        const n = (text.match(/"actividades"/g) || []).length;
+        if (n !== seen) { seen = n; statusEl.textContent = `${label} Día ${n} en camino…`; }
+      },
     });
-    body.append(filters, grid); draw();
-
-    if (Array.isArray(r.donde_dormir) && r.donde_dormir.length) {
-      body.append(el("h2", null, "Dónde dormir"));
-      const ul = el("ul", "tips"); r.donde_dormir.forEach((z) => { const li = el("li"); li.append(el("strong", null, z.zona + ": "), document.createTextNode(`${z.por_que || ""}${z.rango_noche ? ` (${z.rango_noche} / noche)` : ""}`)); ul.append(li); }); body.append(ul);
-    }
-    if (Array.isArray(r.movilidad) && r.movilidad.length) {
-      body.append(el("h2", null, "Cómo moverte"));
-      const ul = el("ul", "tips"); r.movilidad.forEach((m) => ul.append(el("li", null, String(m)))); body.append(ul);
-    }
-    body.append(el("p", "notice", "Precios aproximados de Claude, sin consulta en vivo: verifica vuelos, tarifas y horarios antes de reservar."));
+    state.ctl = null;
+    return r;
   }
 
-  // ---------- Ejemplo inicial (no es tu viaje) ----------
-  renderCar({
-    via: "la Autopista del Café (ejemplo)", distancia_km: 300, tiempo_conduccion: "6 h 30 min", peajes: { cantidad: 6, total_aprox_cop: 110000, nota: "Ejemplo ilustrativo" },
-    paradas: [
-      { nombre: "Fusagasugá", municipio: "Cundinamarca", km: 64, tipo: "comida", por_que: "Buen punto para desayunar al bajar de la sabana.", tiempo_sugerido: "30 min", desvio: "sobre la vía" },
-      { nombre: "Mirador de La Línea", municipio: "Cajamarca, Tolima", km: 215, tipo: "mirador", por_que: "Vista de la cordillera Central en el paso más alto.", tiempo_sugerido: "20 min", imperdible: true, desvio: "sobre la vía" },
-      { nombre: "Filandia", municipio: "Quindío", km: 290, tipo: "pueblo", por_que: "Pueblo cafetero con mirador y calles de colores.", tiempo_sugerido: "1 h 30 min", imperdible: true, desvio: "20 min" },
-    ],
-    energia: ["Ejemplo: sal con batería al 100 % y tanque lleno.", "Ejemplo: en la bajada de La Línea el carro recupera batería frenando con el motor."],
-  }, "Bogotá", "Salento (ejemplo)");
-  $("head").prepend(el("p", "notice", "Así se ve un resultado (ejemplo). Escribe tu destino arriba para armar el tuyo."));
-
-  // ---------- Markdown mínimo y seguro para las respuestas del chat ----------
-  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const inl = (s) => esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  function md(src) {
-    let html = "", list = false;
-    for (const raw of src.split("\n")) {
-      const t = raw.trim(); let m;
-      if (!t) { if (list) { html += "</ul>"; list = false; } continue; }
-      if ((m = t.match(/^#{1,4}\s+(.*)/))) { if (list) { html += "</ul>"; list = false; } html += `<h3>${inl(m[1])}</h3>`; continue; }
-      if ((m = t.match(/^(?:[-*•]|\d+[.)])\s+(.*)/))) { if (!list) { html += "<ul>"; list = true; } html += `<li>${inl(m[1])}</li>`; continue; }
-      if (list) { html += "</ul>"; list = false; }
-      html += `<p>${inl(t)}</p>`;
-    }
-    return html + (list ? "</ul>" : "");
-  }
-
-  // ---------- Llamadas ----------
   const msgFor = (code) => ({
-    not_granted: "Para continuar, permite que esta página use Claude.",
+    not_granted: "Para armar el itinerario, permite que esta página use Claude.",
     sampling_disabled: "Claude no está disponible para esta cuenta.",
     rate_limited: "Demasiadas solicitudes seguidas. Espera un momento y vuelve a intentar.",
     session_expired: "Tu sesión de Claude expiró. Vuelve a iniciar sesión.",
     refused: "Claude no pudo responder esa solicitud. Prueba a escribirla distinto.",
-    invalid_json: "La respuesta llegó incompleta. Pulsa el botón otra vez.",
+    invalid_json: "El itinerario llegó incompleto. Pulsa el botón otra vez (prueba con menos días si se repite).",
   }[code] || "Se cortó la conexión. Vuelve a intentar.");
-  const showErr = (t) => { $("err").textContent = t; $("err").hidden = false; };
-  const busy = (on) => { $("go").disabled = on; $("send").disabled = on; $("stop").hidden = !on; };
 
-  async function plan() {
-    $("err").hidden = true;
-    const d = $("destino").value.trim();
-    if (!d) { $("destino").focus(); showErr(mode === "carro" ? "Escribe hasta dónde vas." : "Escribe a dónde viajas."); return; }
-    if (!sample) { showErr("Abre esta página dentro de Claude para usarla."); return; }
-    const o = $("origen").value.trim() || "Bogotá";
-    try { localStorage.setItem("ruta.origen", o); } catch {}
-    const dias = $("dias").value.trim(), viaj = $("viajeros").value.trim() || "2", gustos = $("gustos").value.trim();
-    const prompt = mode === "carro" ? carPrompt(o, d, dias, viaj, gustos) : airPrompt(o, d, dias, viaj, gustos);
-
-    $("head").replaceChildren(el("div", "status", mode === "carro" ? `Buscando las mejores paradas de ${o} a ${d}… (≈ 1 min)` : `Armando presupuesto y sitios en ${d}… (≈ 1 min)`));
-    $("body").replaceChildren(); $("chat").hidden = true; $("thread").replaceChildren();
-    $("out").scrollIntoView({ behavior: "smooth", block: "start" });
-    ctl = new AbortController(); busy(true);
+  $("create").onclick = async () => {
+    const err = $("new-err"); err.hidden = true;
+    const destino = $("n-destino").value.trim();
+    if (!destino) { err.textContent = "Escribe a dónde vas."; err.hidden = false; $("n-destino").focus(); return; }
+    if (!state.sample) { err.textContent = "Abre esta página dentro de Claude para armar itinerarios."; err.hidden = false; return; }
+    const dias = Math.min(21, Math.max(1, parseInt($("n-dias").value, 10) || 3));
+    const t = {
+      tipo: "viaje", id: uid(), modo: state.mode, destino,
+      origen: $("n-origen").value.trim() || "Bogotá", fecha_inicio: $("n-fecha").value || "",
+      dias, viajeros: parseInt($("n-viajeros").value, 10) || 2, ritmo: $("n-ritmo").value,
+      regreso: state.mode === "carro" ? $("n-regreso").value : "", presupuesto: $("n-presu").value.trim(), gustos: $("n-gustos").value.trim(),
+      creado: new Date().toISOString(), notas: "", historial: [],
+    };
+    try { localStorage.setItem("planificador.origen", t.origen); } catch {}
+    const st = $("gen-status"); st.hidden = false; st.textContent = `Armando tu itinerario a ${destino}… (1 a 2 minutos)`;
+    $("create").disabled = true; $("cancel-gen").hidden = false;
     try {
-      const r = await sample.json(prompt, { signal: ctl.signal, modelTier: "default" });
-      if (!r || typeof r !== "object") throw { code: "invalid_json" };
-      mode === "carro" ? renderCar(r, o, d) : renderAir(r, d);
-      last = { mode, o, d, json: JSON.stringify(r) };
-      turns = [];
-      $("chat").hidden = false;
+      t.plan = normalize(await askJSON(genPrompt(t), st, `Armando tu itinerario a ${destino}…`));
+      t.historial.push({ fecha: new Date().toISOString(), texto: "Itinerario creado." });
+      state.trips.set(t.id, t);
+      await store.save(t);
+      $("n-destino").value = ""; $("n-gustos").value = "";
+      go("trip", t.id);
     } catch (e) {
-      $("head").replaceChildren(); $("body").replaceChildren();
-      if (e?.code !== "cancelled") showErr(msgFor(e?.code));
-    } finally { busy(false); ctl = null; }
+      state.ctl = null;
+      if (e?.code && e.code !== "cancelled") { err.textContent = msgFor(e.code); err.hidden = false; }
+      else if (!e?.code) saveErr(e);
+    } finally {
+      st.hidden = true; $("create").disabled = false; $("cancel-gen").hidden = true;
+    }
+  };
+  $("cancel-gen").onclick = () => state.ctl?.abort();
+
+  // ================= Itinerario =================
+  function renderTrip() {
+    const v = $("v-trip"); v.replaceChildren();
+    const t = state.trips.get(state.currentId);
+    if (!t) { go("list"); return; }
+    const p = t.plan || { dias: [] };
+    const cur = p.moneda || "COP";
+    const carro = t.modo === "carro";
+
+    // Encabezado
+    const head = el("div", "panel");
+    const top = el("div", "top");
+    const back = el("button", "btn sm", "← Mis viajes"); back.type = "button"; back.dataset.go = "list";
+    const delWrap = el("div", "actions");
+    const del = el("button", "btn sm danger", "Borrar viaje"); del.type = "button";
+    del.onclick = () => {
+      delWrap.replaceChildren(el("span", "small", "¿Borrar este viaje?"));
+      const yes = el("button", "btn sm danger", "Sí, borrar"); yes.type = "button";
+      const no = el("button", "btn sm", "No"); no.type = "button";
+      yes.onclick = async () => { state.trips.delete(t.id); go("list"); renderList(); try { await store.remove(t.id); toast("Viaje borrado."); } catch (e) { saveErr(e); } };
+      no.onclick = () => renderTrip();
+      delWrap.append(yes, no);
+    };
+    delWrap.append(del);
+    top.append(back, delWrap);
+    head.append(top);
+    head.append(el("span", "small muted", (carro ? "🚗 En carro" : "✈️ En avión") + ` · desde ${t.origen}`));
+    head.append(el("h2", null, p.titulo || t.destino));
+    if (p.resumen) head.append(el("p", "muted", p.resumen));
+    const total = typeof p.total === "number" ? p.total : sumBudget(p);
+    const km = (p.dias || []).reduce((s, d) => s + (Number(d.tramo?.km) || 0), 0);
+    const stats = el("div", "stats");
+    [[`${p.dias.length} días`, t.fecha_inicio ? `desde ${fechaDia(t.fecha_inicio, 0)}` : "fechas por definir"],
+     [money(total, cur), `presupuesto total (${t.viajeros} viajeros)`],
+     [money(total / (t.viajeros || 1), cur), "por persona"],
+     ...(carro && km ? [[`${km} km`, "en carro (aprox.)"]] : [])]
+      .forEach(([b, s]) => { const c = el("div"); c.append(el("b", null, b), el("span", null, s)); stats.append(c); });
+    head.append(stats);
+    v.append(head);
+
+    // Días
+    p.dias.forEach((d, i) => {
+      const box = el("div", "panel day");
+      const dh = el("div", "dayhead");
+      dh.append(el("span", "sign", `Día ${i + 1}${t.fecha_inicio ? " · " + fechaDia(t.fecha_inicio, i) : ""}`), el("h3", null, d.titulo || ""));
+      box.append(dh);
+      if (d.tramo && d.tramo.desde) {
+        const leg = el("div", "leg");
+        leg.append(el("b", null, `${d.tramo.desde} → ${d.tramo.hasta}`));
+        leg.append(el("span", null, [d.tramo.km && `${d.tramo.km} km`, d.tramo.horas].filter(Boolean).join(" · ")));
+        const a = el("a", "btn link", "Ver ruta en Google Maps"); a.href = mapsRoute(d.tramo.desde, d.tramo.hasta); a.target = "_blank"; a.rel = "noopener";
+        leg.append(a); box.append(leg);
+      }
+      const ul = el("ul", "acts");
+      const sorted = [...d.actividades].sort((a, b) => (a.hora || "99").localeCompare(b.hora || "99"));
+      sorted.forEach((a) => {
+        const li = el("li", "act");
+        li.append(el("span", "h", a.hora || "—"));
+        const c = el("div", "c");
+        const tt = el("span", "t", a.titulo || "");
+        c.append(tt);
+        if (a.detalle) c.append(el("span", "d", a.detalle));
+        const m = el("span", "m");
+        if (a.propia) m.append(el("span", "tag mine", "Mía"));
+        else if (a.tipo) m.append(el("span", "tag", a.tipo));
+        if (a.costo) m.append(el("span", null, "💲 " + a.costo));
+        if (a.lugar) { const l = el("a", null, "📍 " + a.lugar); l.href = mapsSearch(a.lugar.includes(",") ? a.lugar : `${a.lugar}, ${t.destino}`); l.target = "_blank"; l.rel = "noopener"; m.append(l); }
+        c.append(m);
+        const x = el("button", "x", "✕"); x.type = "button"; x.title = "Quitar actividad"; x.setAttribute("aria-label", `Quitar ${a.titulo}`);
+        x.onclick = () => removeActivity(t, i, a.id);
+        li.append(c, x); ul.append(li);
+      });
+      box.append(ul);
+      if (d.dormir && d.dormir.donde) {
+        box.append(el("p", "sleep", `🛏 Dormir: ${d.dormir.donde}${d.dormir.rango_noche ? ` (${d.dormir.rango_noche} / noche)` : ""}${d.dormir.por_que ? ` — ${d.dormir.por_que}` : ""}`));
+      }
+      // Agregar actividad propia
+      const add = el("button", "btn link", "＋ Agregar actividad"); add.type = "button";
+      add.onclick = () => {
+        const f = el("form", "addform");
+        const h = el("input"); h.type = "time"; h.id = `add-h-${i}`; h.setAttribute("aria-label", "Hora");
+        const tx = el("input"); tx.id = `add-t-${i}`; tx.placeholder = "Qué quieres hacer"; tx.required = true; tx.setAttribute("aria-label", "Actividad");
+        const ok = el("button", "btn sm primary", "Agregar"); ok.type = "submit";
+        f.append(h, tx, ok);
+        f.onsubmit = (e) => { e.preventDefault(); if (!tx.value.trim()) return; addActivity(t, i, { hora: h.value, titulo: tx.value.trim() }); };
+        add.replaceWith(f); tx.focus();
+      };
+      box.append(add);
+      v.append(box);
+    });
+
+    // Presupuesto
+    if (p.presupuesto.length) {
+      const b = el("div", "panel");
+      b.append(el("h2", null, "Presupuesto"));
+      const w = el("div", "tbl"), tb = el("table"), th = el("thead"), hr = el("tr");
+      hr.append(el("th", null, "Concepto"), el("th", null, "Detalle"), el("th", null, "Total")); th.append(hr);
+      const body = el("tbody");
+      p.presupuesto.forEach((x) => { const tr = el("tr"); tr.append(el("td", null, x.concepto || ""), el("td", null, x.detalle || ""), el("td", "n", money(Number(x.total), cur))); body.append(tr); });
+      const tot = el("tr", "total"); tot.append(el("td", null, "Total"), el("td", null, `${money(total / (t.viajeros || 1), cur)} por persona`), el("td", "n", money(total, cur))); body.append(tot);
+      tb.append(th, body); w.append(tb); b.append(w);
+      v.append(b);
+    }
+
+    // Consejos
+    const tipsSec = (title, items) => {
+      if (!Array.isArray(items) || !items.length) return;
+      const b = el("div", "panel"); b.append(el("h2", null, title));
+      const ul = el("ul", "tips"); items.forEach((x) => ul.append(el("li", null, String(x)))); b.append(ul); v.append(b);
+    };
+    if (carro) tipsSec("🔋⛽ Batería y gasolina", p.energia);
+    tipsSec("Consejos", p.consejos);
+
+    // Complementar con Claude
+    const comp = el("div", "panel");
+    comp.append(el("h2", null, "Complementar el viaje"));
+    comp.append(el("p", "muted small", "Pide cambios y Claude actualiza el itinerario: agregar un día, cambiar una actividad, buscar algo más barato, añadir dónde comer…"));
+    const ta = el("textarea"); ta.id = "comp-text"; ta.rows = 3; ta.placeholder = "Ej. agrega un día más en Filandia · el día 2 quiero algo de aventura · ¿dónde almorzar en el camino?";
+    const ca = el("div", "actions");
+    const send = el("button", "btn primary", "Actualizar itinerario"); send.type = "button";
+    const stop = el("button", "btn", "Detener"); stop.type = "button"; stop.hidden = true; stop.onclick = () => state.ctl?.abort();
+    ca.append(send, stop);
+    const cs = el("p", "status"); cs.hidden = true;
+    const ce = el("p", "err"); ce.hidden = true;
+    send.onclick = () => complement(t, ta, send, stop, cs, ce);
+    comp.append(ta, ca, cs, ce);
+    v.append(comp);
+
+    // Notas
+    const notes = el("div", "panel");
+    notes.append(el("h2", null, "Mis notas"));
+    const nt = el("textarea"); nt.id = "notes"; nt.rows = 3; nt.placeholder = "Reservas, números de confirmación, cosas por empacar…"; nt.value = t.notas || "";
+    const ns = el("span", "small muted");
+    let timer = null;
+    nt.oninput = () => { clearTimeout(timer); ns.textContent = ""; timer = setTimeout(async () => { const tr = state.trips.get(t.id); if (!tr || tr.notas === nt.value) return; tr.notas = nt.value; try { await store.save(tr); ns.textContent = "Guardado"; } catch (e) { saveErr(e); } }, 800); };
+    notes.append(nt, ns);
+    v.append(notes);
+
+    // Historial
+    if (Array.isArray(t.historial) && t.historial.length) {
+      const h = el("div", "panel"); h.append(el("h2", null, "Cambios"));
+      const ul = el("ul", "log");
+      [...t.historial].reverse().forEach((c) => { const li = el("li"); li.append(el("span", "muted", new Date(c.fecha).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }) + " · "), document.createTextNode(c.texto)); ul.append(li); });
+      h.append(ul); v.append(h);
+    }
+    v.append(el("p", "notice", "Itinerario de Claude sin consulta en vivo: confirma precios, horarios, peajes y disponibilidad antes de reservar."));
   }
 
-  async function followup() {
-    const q = $("followup").value.trim();
-    if (!q || !last || !sample) return;
-    $("followup").value = "";
-    const th = $("thread");
-    th.append(el("div", "you", q));
-    const out = el("div", "md"), st = el("div", "status", "Pensando…");
-    th.append(st, out);
-    const ctx = `Eres un experto en viajes. Responde en español, breve y práctico (máx. 150 palabras, listas cortas, sin tablas). ${last.mode === "carro" ? "El carro es una Chery iCAR 03T de rango extendido (batería + generador a gasolina), no necesita parar a cargar." : ""}
-Este es el plan que ya le diste al usuario (${last.mode}, ${last.o} → ${last.d}):
-${last.json}`;
-    turns.push({ role: "user", content: q });
-    ctl = new AbortController(); busy(true);
-    try {
-      const { text } = await sample([{ role: "user", content: ctx }, ...turns], { signal: ctl.signal, cache: false, onText: ({ text }) => { st.remove(); out.innerHTML = md(text); } });
-      st.remove(); out.innerHTML = md(text);
-      turns.push({ role: "assistant", content: text });
-      if (turns.length > 12) turns = turns.slice(-12);
-    } catch (e) {
-      st.remove(); turns.pop();
-      if (e?.text) out.innerHTML = md(e.text); else out.remove();
-      if (e?.code !== "cancelled") showErr(msgFor(e?.code));
-    } finally { busy(false); ctl = null; }
+  // Quitar / agregar actividades (con deshacer)
+  let undo = null;
+  async function removeActivity(t, dayIdx, actId) {
+    const tr = state.trips.get(t.id); if (!tr) return;
+    const before = clone(tr);
+    const day = tr.plan.dias[dayIdx];
+    const act = day.actividades.find((a) => a.id === actId);
+    day.actividades = day.actividades.filter((a) => a.id !== actId);
+    tr.historial = [...(tr.historial || []), { fecha: new Date().toISOString(), texto: `Quitaste “${act?.titulo || "actividad"}” del día ${dayIdx + 1}.` }];
+    renderTrip();
+    undo = async () => { state.trips.set(t.id, before); renderTrip(); try { await store.save(before); } catch (e) { saveErr(e); } };
+    toast("Actividad quitada.", true);
+    try { await store.save(tr); } catch (e) { saveErr(e); }
+  }
+  async function addActivity(t, dayIdx, a) {
+    const tr = state.trips.get(t.id); if (!tr) return;
+    tr.plan.dias[dayIdx].actividades.push({ id: uid(), hora: a.hora || "", titulo: a.titulo, propia: true, tipo: "propia" });
+    tr.historial = [...(tr.historial || []), { fecha: new Date().toISOString(), texto: `Agregaste “${a.titulo}” al día ${dayIdx + 1}.` }];
+    renderTrip();
+    try { await store.save(tr); } catch (e) { saveErr(e); }
   }
 
-  $("go").onclick = plan;
-  $("destino").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); plan(); } });
-  $("send").onclick = followup;
-  $("followup").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); followup(); } });
-  $("stop").onclick = () => ctl?.abort();
+  async function complement(t, ta, send, stop, cs, ce) {
+    const pedido = ta.value.trim();
+    ce.hidden = true;
+    if (!pedido) { ta.focus(); return; }
+    if (!state.sample) { ce.textContent = "Abre esta página dentro de Claude para usar esta opción."; ce.hidden = false; return; }
+    const tr = state.trips.get(t.id);
+    const prompt = `Eres un planificador de viajes experto. Hoy es ${hoyISO()}.
+Viaje: ${tr.modo === "carro" ? "en carro (Chery iCAR 03T de rango extendido: batería + gasolina, no necesita paradas de carga)" : "en avión"}, de ${tr.origen} a ${tr.destino}, ${tr.viajeros} viajeros, ritmo ${tr.ritmo}${tr.fecha_inicio ? `, inicia ${tr.fecha_inicio}` : ""}.
+Este es el itinerario actual (JSON):
+${JSON.stringify(tr.plan)}
 
-  if (window.claude?.use) window.claude.use("sample").then((s) => { sample = s; if (!s) showErr("Abre esta página dentro de Claude para usarla."); });
-  else showErr("Abre esta página dentro de Claude para usarla.");
+El usuario pide: "${pedido}"
+
+Devuelve el itinerario COMPLETO actualizado, con la misma forma JSON. Cambia solo lo necesario para cumplir el pedido; conserva todo lo demás tal cual, incluidos los "id" de las actividades y las actividades con "propia": true (las agregó el usuario). No vuelvas a poner actividades que no estén en el JSON actual a menos que el pedido lo implique. Si agregas o quitas días, ajusta el presupuesto. Agrega el campo "cambios" con 1 o 2 frases sobre lo que cambiaste.
+Responde SOLO con el objeto JSON.`;
+    send.disabled = true; stop.hidden = false; cs.hidden = false; cs.textContent = "Actualizando el itinerario… (1 a 2 minutos)";
+    try {
+      const plan = normalize(await askJSON(prompt, cs, "Actualizando el itinerario…"));
+      const cambios = typeof plan.cambios === "string" && plan.cambios ? plan.cambios : "Itinerario actualizado.";
+      delete plan.cambios;
+      const now = state.trips.get(t.id); if (!now) return;
+      // Conservar las actividades propias que Claude haya omitido.
+      const ids = new Set(plan.dias.flatMap((d) => d.actividades.map((a) => a.id)));
+      now.plan.dias.forEach((d, i) => d.actividades.filter((a) => a.propia && !ids.has(a.id))
+        .forEach((a) => (plan.dias[Math.min(i, plan.dias.length - 1)]?.actividades.push(a))));
+      now.plan = plan; now.dias = plan.dias.length;
+      now.historial = [...(now.historial || []), { fecha: new Date().toISOString(), texto: `Pediste: “${pedido}”. ${cambios}` }];
+      ta.value = "";
+      renderTrip();
+      toast("Itinerario actualizado.");
+      await store.save(now);
+    } catch (e) {
+      state.ctl = null;
+      if (e?.code && e.code !== "cancelled") { ce.textContent = msgFor(e.code); ce.hidden = false; }
+      else if (!e?.code) saveErr(e);
+    } finally {
+      send.disabled = false; stop.hidden = true; cs.hidden = true;
+    }
+  }
+
+  // Aviso flotante
+  let toastTimer = null;
+  function toast(text, withUndo) {
+    $("toast-t").textContent = text; $("toast-undo").hidden = !withUndo; $("toast").hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { $("toast").hidden = true; undo = null; }, withUndo ? 6000 : 3000);
+  }
+  $("toast-undo").onclick = () => { $("toast").hidden = true; const u = undo; undo = null; u?.(); };
+
+  // ================= Arranque =================
+  const hasClaude = typeof window.claude?.use === "function";
+  if (hasClaude) {
+    claude.use("sample").then((s) => { state.sample = s; });
+    store.init((m, fromCache) => {
+      const prev = state.trips.get(state.currentId);
+      state.trips = m;
+      $("list-loading").hidden = true;
+      if (!fromCache) $("list-note").hidden = true;
+      renderList();
+      if (state.view === "trip") {
+        const next = m.get(state.currentId);
+        if (!next) { go("list"); return; }
+        // Solo redibujar si el viaje cambió desde otro lado y no estás escribiendo en él.
+        const typing = $("v-trip").contains(document.activeElement) && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+        if (JSON.stringify(prev) !== JSON.stringify(next) && !typing) renderTrip();
+      }
+    }, (msg) => { $("list-loading").hidden = true; $("list-note").textContent = msg; $("list-note").hidden = false; renderList(); });
+  } else {
+    store.kind = "local";
+    state.trips = store.readLocal();
+    store.onLocal = (m) => { state.trips = m; renderList(); };
+    $("list-loading").hidden = true;
+    $("list-note").textContent = "Abre esta página dentro de Claude para armar itinerarios y guardarlos en tu cuenta.";
+    $("list-note").hidden = false;
+    renderList();
+  }
 })();
 </script>
