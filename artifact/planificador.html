@@ -266,7 +266,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   const NS = "http://www.w3.org/2000/svg";
   const svgEl = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; };
 
-  const state = { trips: new Map(), view: "list", currentId: null, mode: "carro", sample: null, ctl: null, editing: null };
+  const state = { trips: new Map(), view: "list", currentId: null, mode: "carro", sample: null, ctl: null, editing: null, filling: new Set() };
 
   // ================= Almacenamiento (espacio privado del usuario; respaldo: navegador) =================
   const store = {
@@ -382,40 +382,47 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   try { const o = localStorage.getItem("planificador.origen"); if (o) $("n-origen").value = o; } catch {}
 
   const TIPOS = "naturaleza|pueblo|sitio turístico|mirador|cultura|aventura|comida|traslado|descanso|noche";
-  const FORMA = `{"titulo":"nombre corto y atractivo del viaje","resumen":"2-3 frases","moneda":"COP",
-"clima":{"resumen":"cómo es el clima en la zona y la mejor época","temperatura":"18–24 °C","que_llevar":["6 a 10 cosas para empacar según clima y actividades"]},
-"dias":[{"titulo":"tema del día","tramo":null,"perfil":[],
-  "actividades":[{"hora":"08:00","titulo":"qué hacer","detalle":"2 frases concretas: qué ver y por qué vale la pena","lugar":"Nombre real del lugar, Municipio, Departamento","tipo":"${TIPOS}","duracion":"1 h 30 min","costo":"aprox. por persona o gratis"}],
-  "dormir":{"donde":"zona o tipo de hospedaje","por_que":"breve","rango_noche":"$150.000–$250.000"}}],
-"mas_ideas":[{"titulo":"otro lugar de naturaleza, pueblo o sitio turístico cercano","detalle":"por qué vale la pena","lugar":"Nombre, Municipio","tipo":"${TIPOS}","duracion":"2 h","costo":"aprox."}],
-"gastronomia":[{"plato":"plato típico","detalle":"qué es","donde":"dónde probarlo (zona o tipo de sitio)"}],
-"presupuesto":[{"concepto":"Hospedaje 3 noches","detalle":"breve","total":900000}],
-"consejos":["5 a 8 consejos prácticos: seguridad, horarios, reservas, dinero, conectividad"],
-"energia":["solo en carro: 3 o 4 consejos de batería y gasolina para ESTA ruta"]}
-En días con trayecto en carro: "tramo": {"desde":"Ciudad","hasta":"Ciudad","km":300,"horas":"6 h 30 min"} y "perfil": 5 a 9 puntos de la ruta en orden con su altitud real aproximada [{"lugar":"Bogotá","km":0,"altitud_m":2600}, ...] (incluye origen, pasos de montaña y destino). En los demás días "tramo": null y "perfil": [].`;
+  const ACT_FORMA = `{"hora":"08:00","titulo":"qué hacer","detalle":"1-2 frases concretas: qué ver y por qué vale la pena","lugar":"Nombre real del lugar, Municipio","tipo":"${TIPOS}","duracion":"1 h 30 min","costo":"aprox. por persona o gratis"}`;
+  const DORMIR_FORMA = `{"donde":"zona o tipo de hospedaje","por_que":"breve","rango_noche":"$150.000–$250.000"}`;
+  const viajeTxt = (t) => `${t.modo === "carro" ? "en carro" : "en avión"} de ${t.origen} a ${t.destino}, ${t.viajeros} viajeros, ritmo ${String(t.ritmo).toLowerCase()}${t.modo === "carro" ? `, ${String(t.regreso).toLowerCase()}. El carro es una Chery iCAR 03T de RANGO EXTENDIDO (batería + generador a gasolina): no necesita paradas de carga` : ""}`;
+  const ENFOQUE = "ENFOQUE OBLIGATORIO: prioriza NATURALEZA (parques, reservas, cascadas, ríos, lagunas, caminatas), PUEBLOS con encanto y SITIOS TURÍSTICOS imperdibles (miradores, centros históricos). Solo lugares reales y conocidos.";
 
-  function genPrompt(t) {
+  // Paso 1: plan general (corto). Las actividades se piden después, de a dos días.
+  function outlinePrompt(t) {
     const carro = t.modo === "carro";
     return `Eres el mejor guía de viajes de Colombia y Latinoamérica. Hoy es ${hoyISO()}.
-Arma una GUÍA DE VIAJE MUY COMPLETA con itinerario día por día:
-- Modo: ${carro ? "carro" : "avión"} · Origen: ${t.origen} · Destino: ${t.destino}
-- Días: ${t.dias} (exactamente ${t.dias} elementos en "dias") · Viajeros: ${t.viajeros} · Ritmo: ${t.ritmo}${carro ? ` · Regreso: ${t.regreso}` : ""}
+Viaje ${viajeTxt(t)}. Duración: ${t.dias} días.
+${ENFOQUE}
+Arma SOLO el plan general (las actividades detalladas se piden después). Sé breve.
+${carro ? `Día 1: trayecto en carro con paradas de naturaleza y pueblos en el camino.${t.regreso.startsWith("Ida y vuelta") ? " Último día: regreso en carro." : ""}` : "Día 1: llegada en avión; último día: salida."}
+Responde SOLO con este JSON (exactamente ${t.dias} elementos en "dias"):
+{"titulo":"nombre corto y atractivo","resumen":"2 frases","moneda":"COP",
+"clima":{"resumen":"1-2 frases y mejor época","temperatura":"18–24 °C","que_llevar":["6 a 8 cosas"]},
+"dias":[{"titulo":"tema del día","foco":"1 frase con los lugares principales","tramo":null,"perfil":[]}],
+"mas_ideas":[{"titulo":"lugar extra cercano (naturaleza o pueblo)","detalle":"1 frase","lugar":"Nombre, Municipio","tipo":"${TIPOS}","duracion":"2 h","costo":"aprox."}],
+"gastronomia":[{"plato":"plato típico","detalle":"1 frase","donde":"dónde probarlo"}],
+"presupuesto":[{"concepto":"Hospedaje ${Math.max(1, t.dias - 1)} noches","detalle":"breve","total":900000}],
+"consejos":["4 a 6 consejos prácticos"]${carro ? `,"energia":["3 consejos de batería y gasolina para esta ruta"]` : ""}}
+${carro ? `En días con trayecto en carro: "tramo":{"desde":"Ciudad","hasta":"Ciudad","km":300,"horas":"6 h 30 min"} y "perfil": 5 a 8 puntos en orden con altitud real aproximada [{"lugar":"Bogotá","km":0,"altitud_m":2600}] (origen, pasos de montaña, destino). Otros días: "tramo":null,"perfil":[].` : `"tramo": null y "perfil": [] en todos los días.`}
+"mas_ideas": 6 a 8. "gastronomia": 4 a 5. "presupuesto": 5 a 7 conceptos para todo el grupo, en COP si el origen está en Colombia (si no, USD)${carro ? ", con peajes (categoría I) y gasolina/energía" : ", con vuelos de referencia y traslados"}.`;
+  }
 
-ENFOQUE OBLIGATORIO: prioriza siempre NATURALEZA (parques, reservas, cascadas, ríos, lagunas, caminatas, avistamiento), PUEBLOS con encanto (patrimonio, plazas, artesanías) y SITIOS TURÍSTICOS imperdibles (miradores, centros históricos, museos clave). Cada día debe tener al menos una actividad de naturaleza o pueblo.
-
-Reglas:
-- Solo lugares reales y conocidos, con su municipio en "lugar". Si no estás seguro de un hotel o restaurante concreto, describe la zona o el tipo.
-- Horarios realistas con traslados, desayuno, almuerzo, cena y descanso. Entre 5 y 8 actividades por día según el ritmo.
-${carro ? `- El carro es una Chery iCAR 03T de RANGO EXTENDIDO (batería + generador a gasolina): no necesita paradas de carga.
-- El día 1 incluye el trayecto en carro y, como actividades, las paradas de naturaleza, pueblos y miradores que realmente valen la pena en el camino. ${t.regreso.startsWith("Ida y vuelta") ? `El último día es el regreso en carro, con 1 o 2 paradas distintas a las de ida.` : ""}
-- Incluye peajes aproximados (automóvil categoría I) y gasolina/energía en el presupuesto.` : `- El día 1 empieza con la llegada al aeropuerto y el traslado; el último día termina con la salida al aeropuerto.
-- Incluye vuelos de referencia y traslados en el presupuesto.`}
-- "mas_ideas": 6 a 10 lugares extra cercanos (sobre todo naturaleza y pueblos) que no estén en el itinerario.
-- "gastronomia": 4 a 6 platos típicos de la zona.
-- Presupuesto total para el grupo en COP si el origen está en Colombia; si no, en USD. Números aproximados, 5 a 8 conceptos.
-
-Responde SOLO con un objeto JSON con esta forma:
-${FORMA}`;
+  // Paso 2: actividades de uno o dos días.
+  function daysPrompt(t, idxs) {
+    const p = t.plan;
+    const resumen = p.dias.map((d, k) => `Día ${k + 1}: ${d.titulo}${d.foco ? " — " + d.foco : ""}${d.tramo?.desde ? ` (trayecto en carro ${d.tramo.desde} → ${d.tramo.hasta}, ${d.tramo.km} km)` : ""}`).join("\n");
+    const ya = p.dias.flatMap((d, k) => idxs.includes(k) ? [] : d.actividades.map((x) => x.titulo)).slice(0, 60).join("; ");
+    const nums = idxs.map((k) => k + 1);
+    return `Eres el mejor guía de viajes de Colombia y Latinoamérica.
+Viaje ${viajeTxt(t)}.
+${ENFOQUE}
+Plan general:
+${resumen}
+${ya ? `Ya están planeadas (no las repitas): ${ya}\n` : ""}
+Arma las actividades del ${nums.length > 1 ? `día ${nums[0]} y del día ${nums[1]}` : `día ${nums[0]}`}: entre 5 y 7 actividades por día con horarios realistas (traslados, desayuno, almuerzo, cena), al menos una de naturaleza o pueblo por día. En días con trayecto en carro, incluye como actividades las paradas que valen la pena en el camino. Si no estás seguro de un hotel o restaurante concreto, describe la zona o el tipo.
+Responde SOLO con este JSON:
+{"dias":[{"n":${nums[0]},"actividades":[${ACT_FORMA}],"dormir":${DORMIR_FORMA}}${nums[1] ? `,{"n":${nums[1]},"actividades":[...],"dormir":{...}}` : ""}]}
+${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "dormir": null si ese día se regresa.` : ""}`;
   }
 
   function normalize(plan) {
@@ -431,29 +438,64 @@ ${FORMA}`;
     return plan;
   }
 
-  async function askJSON(prompt, statusEl, label) {
+  async function askJSON(prompt) {
     state.ctl = new AbortController();
-    let seen = -1;
     try {
-      return await state.sample.json(prompt, {
-        signal: state.ctl.signal, modelTier: "default", cache: false,
-        onText: ({ text }) => {
-          const n = (text.match(/"actividades"/g) || []).length;
-          if (/"mas_ideas"/.test(text)) statusEl.textContent = `${label} Últimos detalles: ideas, comida y presupuesto…`;
-          else if (n !== seen) { seen = n; statusEl.textContent = n ? `${label} Día ${n} en camino…` : label; }
-        },
-      });
+      return await state.sample.json(prompt, { signal: state.ctl.signal, modelTier: "default", cache: false });
     } finally { state.ctl = null; }
   }
 
   const msgFor = (code) => ({
     not_granted: "Para armar la guía, permite que esta página use Claude.",
     sampling_disabled: "Claude no está disponible para esta cuenta.",
-    rate_limited: "Demasiadas solicitudes seguidas. Espera un momento y vuelve a intentar.",
+    rate_limited: "Llegaste al límite de uso de Claude por ahora. Espera un rato y vuelve a intentar.",
     session_expired: "Tu sesión de Claude expiró. Vuelve a iniciar sesión.",
     refused: "Claude no pudo responder esa solicitud. Prueba a escribirla distinto.",
-    invalid_json: "La guía llegó incompleta. Pulsa el botón otra vez (prueba con menos días si se repite).",
-  }[code] || "Se cortó la conexión. Vuelve a intentar.");
+    invalid_json: "La respuesta llegó incompleta. Intenta otra vez.",
+    prompt_too_large: "La guía es muy grande para esta petición. Pide un cambio más puntual.",
+  }[code] || `Se cortó la conexión con Claude. Intenta otra vez${code ? ` (código: ${code})` : ""}.`);
+
+  // Arma las actividades de los días indicados, de a dos días por petición. Guarda cada tanda al llegar.
+  const STOP_CODES = new Set(["cancelled", "not_granted", "sampling_disabled", "rate_limited", "session_expired"]);
+  async function fillDays(tripId, dayIds) {
+    if (!state.sample) { toast("Abre esta página dentro de Claude para armar los días."); return; }
+    dayIds.forEach((id) => state.filling.add(id));
+    if (state.currentId === tripId) renderTrip();
+    let stopCode = null;
+    for (let k = 0; k < dayIds.length; k += 2) {
+      const batch = dayIds.slice(k, k + 2);
+      const tr = state.trips.get(tripId);
+      if (!tr || stopCode) { batch.forEach((id) => state.filling.delete(id)); continue; }
+      const idxs = batch.map((id) => tr.plan.dias.findIndex((d) => d.id === id)).filter((x) => x >= 0);
+      if (!idxs.length) continue;
+      let res = null, code = null;
+      try { res = await askJSON(daysPrompt(tr, idxs)); } catch (e) { code = e?.code || "upstream_error"; }
+      const now = state.trips.get(tripId);
+      if (now) {
+        const out = Array.isArray(res?.dias) ? res.dias : [];
+        idxs.forEach((di, j) => {
+          const d = now.plan.dias.find((x) => x.id === batch[j]); if (!d) return;
+          const got = out.find((o) => Number(o.n) === di + 1) || (out.length === idxs.length ? out[j] : null);
+          if (got && Array.isArray(got.actividades) && got.actividades.length) {
+            const propias = d.actividades.filter((x) => x.propia);
+            d.actividades = got.actividades.map((x) => ({ ...x, id: uid() }));
+            propias.forEach((x) => insertByTime(d.actividades, x));
+            if (got.dormir && got.dormir.donde) d.dormir = got.dormir; else if (got.dormir === null) d.dormir = null;
+            d.pendiente = false; delete d.error;
+          } else {
+            d.pendiente = true; d.error = code === "cancelled" ? "detenido" : msgFor(code || "invalid_json");
+          }
+        });
+        try { await store.save(now); } catch (e) { saveErr(e); }
+      }
+      batch.forEach((id) => state.filling.delete(id));
+      if (code && STOP_CODES.has(code)) stopCode = code;
+      if (state.currentId === tripId && state.view === "trip") renderTrip();
+    }
+    dayIds.forEach((id) => state.filling.delete(id));
+    if (state.currentId === tripId && state.view === "trip") renderTrip();
+    if (stopCode && stopCode !== "cancelled") toast(msgFor(stopCode));
+  }
 
   $("create").onclick = async () => {
     const err = $("new-err"); err.hidden = true;
@@ -468,15 +510,18 @@ ${FORMA}`;
       creado: new Date().toISOString(), notas: "", empacado: [], historial: [],
     };
     try { localStorage.setItem("planificador.origen", t.origen); } catch {}
-    const st = $("gen-status"); st.hidden = false; st.textContent = `Armando tu guía a ${destino}… (1 a 3 minutos)`;
+    const st = $("gen-status"); st.hidden = false; st.textContent = `Paso 1 de 2: armando el plan general a ${destino}… (menos de un minuto)`;
     $("create").disabled = true; $("cancel-gen").hidden = false;
     try {
-      t.plan = normalize(await askJSON(genPrompt(t), st, `Armando tu guía a ${destino}…`));
+      const plan = normalize(await askJSON(outlinePrompt(t)));
+      plan.dias.forEach((d) => { d.actividades = []; d.pendiente = true; });
+      t.plan = plan;
       t.historial.push({ fecha: new Date().toISOString(), texto: "Guía creada." });
       state.trips.set(t.id, t);
       await store.save(t);
       $("n-destino").value = "";
       go("trip", t.id);
+      fillDays(t.id, plan.dias.map((d) => d.id));
     } catch (e) {
       if (e?.code && e.code !== "cancelled") { err.textContent = msgFor(e.code); err.hidden = false; }
       else if (!e?.code) saveErr(e);
@@ -620,6 +665,18 @@ ${FORMA}`;
     jump("Presupuesto", "sec-presu");
     if (p.clima) jump("Empacar", "sec-clima");
     head.append(toc);
+    const pend = p.dias.filter((d) => d.pendiente);
+    if (state.filling.size) {
+      const row = el("div", "actions");
+      const done = p.dias.length - pend.length;
+      row.append(el("span", "status", `Paso 2 de 2: armando las actividades día por día (${done} de ${p.dias.length} listos)…`), btn("btn sm", "Detener", () => state.ctl?.abort()));
+      head.append(row);
+    } else if (pend.length) {
+      const row = el("div", "actions");
+      row.append(el("span", "small muted", `${pend.length} ${pend.length === 1 ? "día sin" : "días sin"} actividades todavía.`),
+        btn("btn sm primary", pend.length === 1 ? "Armar ese día" : "Armar días pendientes", () => fillDays(t.id, pend.map((d) => d.id))));
+      head.append(row);
+    }
     v.append(head);
 
     // ---- Días
@@ -794,10 +851,20 @@ ${FORMA}`;
       }
     }
 
+    // Día en preparación o pendiente
+    if (state.filling.has(d.id)) box.append(el("p", "status", "Armando las actividades de este día…"));
+    else if (d.pendiente) {
+      const row = el("div", "actions");
+      row.append(el("span", "small " + (d.error && d.error !== "detenido" ? "err" : "muted"), d.error && d.error !== "detenido" ? d.error : "Este día aún no tiene actividades."),
+        btn("btn sm primary", "Armar este día", () => fillDays(t.id, [d.id])));
+      box.append(row);
+    }
+    if (d.foco && d.pendiente) box.append(el("p", "small muted", d.foco));
+
     // Actividades
     const ul = el("ul", "acts");
     d.actividades.forEach((x, ai) => ul.append(renderAct(t, d, i, x, ai, nDays)));
-    if (!d.actividades.length) ul.append(el("li", "small muted", "Sin actividades. Agrega una abajo, trae una de “Más ideas” o pídele a Claude."));
+    if (!d.actividades.length && !d.pendiente && !state.filling.has(d.id)) ul.append(el("li", "small muted", "Sin actividades. Agrega una abajo, trae una de “Más ideas” o pídele a Claude."));
     box.append(ul);
 
     const places = d.actividades.filter((x) => x.lugar && x.tipo !== "traslado").map((x) => placeQ(x.lugar, t));
@@ -895,38 +962,83 @@ ${FORMA}`;
   }
 
   // ================= Complementar con Claude =================
+  // Claude devuelve SOLO lo que cambia (días tocados, días nuevos, días a quitar), así la respuesta es corta.
   async function complement(ta, send, stop, cs, ce) {
     const pedido = ta.value.trim();
     ce.hidden = true;
     if (!pedido) { ta.focus(); return; }
     if (!state.sample) { ce.textContent = "Abre esta página dentro de Claude para usar esta opción."; ce.hidden = false; return; }
+    if (state.filling.size) { ce.textContent = "Espera a que terminen de armarse los días."; ce.hidden = false; return; }
     const tr = state.trips.get(state.currentId);
+    const compact = {
+      dias: tr.plan.dias.map((d, k) => ({
+        n: k + 1, titulo: d.titulo, ...(d.tramo?.desde ? { tramo: d.tramo } : {}),
+        actividades: d.actividades.map((x) => ({ hora: x.hora, titulo: x.titulo, lugar: x.lugar, tipo: x.tipo, ...(x.propia ? { propia: true } : {}) })),
+        dormir: d.dormir?.donde || null,
+      })),
+      presupuesto: tr.plan.presupuesto.map((x) => ({ concepto: x.concepto, total: x.total })),
+    };
     const prompt = `Eres el mejor guía de viajes de Colombia y Latinoamérica. Hoy es ${hoyISO()}.
-Viaje ${tr.modo === "carro" ? "en carro (Chery iCAR 03T de rango extendido: batería + gasolina, no necesita paradas de carga)" : "en avión"} de ${tr.origen} a ${tr.destino}, ${tr.viajeros} viajeros, ritmo ${tr.ritmo}. Enfoque: naturaleza, pueblos y sitios turísticos.
-Esta es la guía actual (JSON):
-${JSON.stringify(tr.plan)}
+Viaje ${viajeTxt(tr)}.
+${ENFOQUE}
+Guía actual (resumida):
+${JSON.stringify(compact)}
 
 El usuario pide: "${pedido}"
 
-Devuelve la guía COMPLETA actualizada, con la misma forma JSON. Cambia solo lo necesario para cumplir el pedido y conserva todo lo demás tal cual: los "id", el orden de días y actividades que el usuario dejó, y las actividades con "propia": true. No vuelvas a poner actividades que no estén en el JSON actual a menos que el pedido lo implique. Si agregas días con trayecto en carro, incluye "tramo" y "perfil". Si agregas o quitas días, ajusta el presupuesto. Agrega el campo "cambios" con 1 o 2 frases sobre lo que cambiaste.
-Responde SOLO con el objeto JSON.`;
-    send.disabled = true; stop.hidden = false; cs.hidden = false; cs.textContent = "Actualizando la guía… (1 a 3 minutos)";
+Devuelve SOLO lo que cambia, con este JSON:
+{"cambios":"1-2 frases de lo que cambiaste",
+"dias":[{"n":2,"titulo":"...","actividades":[${ACT_FORMA}],"dormir":${DORMIR_FORMA}}],
+"nuevos_dias":[{"despues_de":3,"titulo":"...","tramo":null,"perfil":[],"actividades":[...],"dormir":{...}}],
+"quitar_dias":[],
+"presupuesto":null}
+Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas sus actividades, con detalle), numerados como en la guía actual; conserva en ellos las actividades con "propia": true. "nuevos_dias" para días agregados ("despues_de" = número de día actual tras el que va; 0 = al inicio); si es trayecto en carro, incluye "tramo" {"desde","hasta","km","horas"} y "perfil" con altitudes. "quitar_dias": números a quitar. "presupuesto": null si no cambia, o la lista completa [{"concepto","detalle","total"}] si cambia. Responde SOLO con el JSON.`;
+    send.disabled = true; stop.hidden = false; cs.hidden = false; cs.textContent = "Actualizando la guía… (menos de un minuto)";
     try {
-      const plan = normalize(await askJSON(prompt, cs, "Actualizando la guía…"));
-      const cambios = typeof plan.cambios === "string" && plan.cambios ? plan.cambios : "Guía actualizada.";
-      delete plan.cambios;
+      const r = await askJSON(prompt);
+      if (!r || typeof r !== "object") throw { code: "invalid_json" };
       const now = state.trips.get(state.currentId); if (!now) return;
-      // Conservar las actividades propias que Claude haya omitido.
-      const ids = new Set(plan.dias.flatMap((dd) => dd.actividades.map((y) => y.id)));
-      now.plan.dias.forEach((dd, k) => dd.actividades.filter((y) => y.propia && !ids.has(y.id))
-        .forEach((y) => plan.dias[Math.min(k, plan.dias.length - 1)]?.actividades.push(y)));
       const before = clone(now);
-      now.plan = plan; now.dias = plan.dias.length;
+      const dias = now.plan.dias;
+      const byN = new Map(dias.map((d, k) => [k + 1, d]));
+      const mkActs = (list) => (Array.isArray(list) ? list : []).map((x) => ({ ...x, id: uid() }));
+      let touched = 0;
+      (Array.isArray(r.dias) ? r.dias : []).forEach((nd) => {
+        const d = byN.get(Number(nd.n)); if (!d || !Array.isArray(nd.actividades)) return;
+        const propias = d.actividades.filter((x) => x.propia);
+        d.actividades = mkActs(nd.actividades).filter((x) => !x.propia);
+        propias.forEach((x) => insertByTime(d.actividades, x));
+        if (nd.titulo) d.titulo = nd.titulo;
+        if (nd.dormir && nd.dormir.donde) d.dormir = nd.dormir; else if (nd.dormir === null) d.dormir = null;
+        d.pendiente = false; delete d.error; touched++;
+      });
+      const quitar = new Set((Array.isArray(r.quitar_dias) ? r.quitar_dias : []).map(Number).map((n) => byN.get(n)?.id).filter(Boolean));
+      const nuevos = (Array.isArray(r.nuevos_dias) ? r.nuevos_dias : []).map((nd) => ({
+        pos: Number(nd.despues_de) || 0,
+        dia: { id: uid(), titulo: nd.titulo || "Día nuevo", tramo: nd.tramo && nd.tramo.desde ? nd.tramo : null,
+          perfil: Array.isArray(nd.perfil) ? nd.perfil.filter((x) => isFinite(Number(x.km)) && isFinite(Number(x.altitud_m))) : [],
+          actividades: mkActs(nd.actividades), dormir: nd.dormir && nd.dormir.donde ? nd.dormir : null },
+      }));
+      // Insertar los nuevos según la numeración original, de atrás hacia adelante.
+      const anchors = nuevos.map((x) => ({ ...x, after: x.pos > 0 ? byN.get(x.pos)?.id : null }));
+      const lastAt = new Map();
+      anchors.forEach(({ dia, after, pos }) => {
+        const key = after || (pos > 0 ? "end" : "start");
+        const ref = lastAt.get(key) || after;
+        const k = ref ? dias.findIndex((d) => d.id === ref) + 1 : (key === "end" ? dias.length : (lastAt.has(key) ? dias.findIndex((d) => d.id === lastAt.get(key)) + 1 : 0));
+        dias.splice(k, 0, dia);
+        lastAt.set(key, dia.id);
+      });
+      now.plan.dias = dias.filter((d) => !quitar.has(d.id));
+      if (Array.isArray(r.presupuesto) && r.presupuesto.length) now.plan.presupuesto = r.presupuesto.map((x) => ({ ...x, id: uid(), total: Number(x.total) || 0 }));
+      if (!touched && !nuevos.length && !quitar.size && !Array.isArray(r.presupuesto)) throw { code: "invalid_json" };
+      now.dias = now.plan.dias.length;
+      const cambios = typeof r.cambios === "string" && r.cambios ? r.cambios : "Guía actualizada.";
       now.historial = [...(now.historial || []), { fecha: new Date().toISOString(), texto: `Pediste: “${pedido}”. ${cambios}` }];
       ta.value = "";
       renderTrip();
       undo = async () => { state.trips.set(before.id, before); renderTrip(); try { await store.save(before); } catch (e) { saveErr(e); } };
-      toast("Guía actualizada.", true);
+      toast(cambios.length > 90 ? "Guía actualizada." : cambios, true);
       await store.save(now);
     } catch (e) {
       if (e?.code && e.code !== "cancelled") { ce.textContent = msgFor(e.code); ce.hidden = false; }
