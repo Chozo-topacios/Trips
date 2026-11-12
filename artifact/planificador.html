@@ -238,6 +238,9 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
         <label class="f">Ritmo<select id="n-ritmo"><option>Moderado</option><option>Tranquilo</option><option>Intenso</option></select></label>
         <label class="f" id="regreso-wrap">Regreso<select id="n-regreso"><option>Ida y vuelta en carro</option><option>Solo ida</option></select></label>
       </div>
+      <label class="f" for="n-desc">Cuéntame del viaje (opcional)
+        <textarea id="n-desc" rows="3" placeholder="Ej. vamos en pareja a celebrar aniversario, nos gusta caminar y la buena comida; queremos evitar madrugar mucho y pasar una noche en un glamping."></textarea>
+      </label>
       <div class="focus" aria-label="Siempre incluido"><span class="pill">🌿 Naturaleza</span><span class="pill">🏘️ Pueblos</span><span class="pill">📸 Sitios turísticos</span></div>
       <div class="actions">
         <button class="btn primary" id="create" type="button">Armar guía de viaje</button>
@@ -385,13 +388,14 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   const ACT_FORMA = `{"hora":"08:00","titulo":"qué hacer","detalle":"1-2 frases concretas: qué ver y por qué vale la pena","lugar":"Nombre real del lugar, Municipio","tipo":"${TIPOS}","duracion":"1 h 30 min","costo":"aprox. por persona o gratis"}`;
   const DORMIR_FORMA = `{"donde":"zona o tipo de hospedaje","por_que":"breve","rango_noche":"$150.000–$250.000"}`;
   const viajeTxt = (t) => `${t.modo === "carro" ? "en carro" : "en avión"} de ${t.origen} a ${t.destino}, ${t.viajeros} viajeros, ritmo ${String(t.ritmo).toLowerCase()}${t.modo === "carro" ? `, ${String(t.regreso).toLowerCase()}. El carro es una Chery iCAR 03T de RANGO EXTENDIDO (batería + generador a gasolina): no necesita paradas de carga` : ""}`;
+  const contexto = (t) => t.descripcion ? `\nLo que el viajero cuenta de su viaje (tenlo muy en cuenta para elegir lugares, horarios, ritmo y hospedaje): "${t.descripcion}"` : "";
   const ENFOQUE = "ENFOQUE OBLIGATORIO: prioriza NATURALEZA (parques, reservas, cascadas, ríos, lagunas, caminatas), PUEBLOS con encanto y SITIOS TURÍSTICOS imperdibles (miradores, centros históricos). Solo lugares reales y conocidos.";
 
   // Paso 1: plan general (corto). Las actividades se piden después, de a dos días.
   function outlinePrompt(t) {
     const carro = t.modo === "carro";
     return `Eres el mejor guía de viajes de Colombia y Latinoamérica. Hoy es ${hoyISO()}.
-Viaje ${viajeTxt(t)}. Duración: ${t.dias} días.
+Viaje ${viajeTxt(t)}.${contexto(t)} Duración: ${t.dias} días.
 ${ENFOQUE}
 Arma SOLO el plan general (las actividades detalladas se piden después). Sé breve.
 ${carro ? `Día 1: trayecto en carro con paradas de naturaleza y pueblos en el camino.${t.regreso.startsWith("Ida y vuelta") ? " Último día: regreso en carro." : ""}` : "Día 1: llegada en avión; último día: salida."}
@@ -414,7 +418,7 @@ ${carro ? `En días con trayecto en carro: "tramo":{"desde":"Ciudad","hasta":"Ci
     const ya = p.dias.flatMap((d, k) => idxs.includes(k) ? [] : d.actividades.map((x) => x.titulo)).slice(0, 60).join("; ");
     const nums = idxs.map((k) => k + 1);
     return `Eres el mejor guía de viajes de Colombia y Latinoamérica.
-Viaje ${viajeTxt(t)}.
+Viaje ${viajeTxt(t)}.${contexto(t)}
 ${ENFOQUE}
 Plan general:
 ${resumen}
@@ -507,6 +511,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       tipo: "viaje", id: uid(), modo: state.mode, destino,
       origen: $("n-origen").value.trim() || "Bogotá", dias, viajeros: parseInt($("n-viajeros").value, 10) || 2,
       ritmo: $("n-ritmo").value, regreso: state.mode === "carro" ? $("n-regreso").value : "",
+      descripcion: $("n-desc").value.trim().slice(0, 1500),
       creado: new Date().toISOString(), notas: "", empacado: [], historial: [],
     };
     try { localStorage.setItem("planificador.origen", t.origen); } catch {}
@@ -519,7 +524,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       t.historial.push({ fecha: new Date().toISOString(), texto: "Guía creada." });
       state.trips.set(t.id, t);
       await store.save(t);
-      $("n-destino").value = "";
+      $("n-destino").value = ""; $("n-desc").value = "";
       go("trip", t.id);
       fillDays(t.id, plan.dias.map((d) => d.id));
     } catch (e) {
@@ -646,6 +651,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     head.append(top, el("span", "small muted", `${carro ? "🚗 En carro" : "✈️ En avión"} · ${t.origen} → ${t.destino} · ${t.viajeros} viajeros · ritmo ${String(t.ritmo || "").toLowerCase()}`));
     head.append(el("h2", null, p.titulo || t.destino));
     if (p.resumen) head.append(el("p", "muted", p.resumen));
+    if (t.descripcion) head.append(el("p", "notice", "Tu descripción: " + t.descripcion));
     const stats = el("div", "stats");
     [[`${p.dias.length} ${p.dias.length === 1 ? "día" : "días"}`, `${p.dias.reduce((s, d) => s + d.actividades.length, 0)} actividades`],
      [money(total, cur), "presupuesto total"], [money(total / (t.viajeros || 1), cur), "por persona"],
@@ -979,7 +985,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       presupuesto: tr.plan.presupuesto.map((x) => ({ concepto: x.concepto, total: x.total })),
     };
     const prompt = `Eres el mejor guía de viajes de Colombia y Latinoamérica. Hoy es ${hoyISO()}.
-Viaje ${viajeTxt(tr)}.
+Viaje ${viajeTxt(tr)}.${contexto(tr)}
 ${ENFOQUE}
 Guía actual (resumida):
 ${JSON.stringify(compact)}
