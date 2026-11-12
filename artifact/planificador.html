@@ -521,7 +521,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     const err = $("new-err"); err.hidden = true;
     const destino = $("n-destino").value.trim();
     if (!destino) { err.textContent = "Escribe a dónde vas."; err.hidden = false; $("n-destino").focus(); return; }
-    if (!state.sample) { err.textContent = "Abre esta página dentro de Claude para armar guías."; err.hidden = false; return; }
+    if (!state.sample) { err.textContent = "Para armar la guía necesitas iniciar sesión en Claude (es gratis): toca “Iniciar sesión” arriba a la derecha y vuelve a abrir este enlace."; err.hidden = false; return; }
     const dias = Math.min(21, Math.max(1, parseInt($("n-dias").value, 10) || 3));
     const t = {
       tipo: "viaje", id: uid(), modo: state.mode, destino,
@@ -1081,7 +1081,14 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
 
   // ================= Arranque =================
   if (typeof window.claude?.use === "function") {
-    claude.use("sample").then((s) => { state.sample = s; });
+    // Sin sesión en Claude la página no puede armar guías ni guardar viajes: explicarlo claramente.
+    const signInNote = () => {
+      state.signedOut = true;
+      $("list-loading").hidden = true;
+      $("list-note").textContent = "Para usar el planificador necesitas iniciar sesión en Claude (puedes crear una cuenta gratis). Toca “Iniciar sesión” arriba a la derecha y luego vuelve a abrir este mismo enlace.";
+      $("list-note").hidden = false;
+    };
+    claude.use("sample").then((s) => { state.sample = s; if (!s) signInNote(); });
     store.init((m, fromCache) => {
       const prev = state.trips.get(state.currentId);
       state.trips = m;
@@ -1094,7 +1101,7 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
         const typing = $("v-trip").contains(document.activeElement) && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
         if (JSON.stringify(prev) !== JSON.stringify(next) && !typing && !state.editing) renderTrip();
       }
-    }, (msg) => { $("list-loading").hidden = true; $("list-note").textContent = msg; $("list-note").hidden = false; renderList(); });
+    }, (msg) => { if (state.signedOut) return; $("list-loading").hidden = true; $("list-note").textContent = msg; $("list-note").hidden = false; renderList(); });
   } else {
     store.kind = "local";
     state.trips = store.readLocal();
