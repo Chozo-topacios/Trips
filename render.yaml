@@ -12,5 +12,7 @@ services:
         sync: false # Render la pide al crear el servicio; no se guarda en el repositorio
       - key: NODE_ENV
         value: production
+      - key: ALLOWED_ORIGINS
+        value: https://chozo-topacios.github.io
       - key: RATE_LIMIT_PER_HOUR
         value: "40"

@@ -3,12 +3,12 @@
 // que llama a Claude con la API key del dueño. Los viajes se guardan en el navegador de cada visitante.
 import express from "express";
 import fs from "node:fs";
+import { buildPage, fragmentPath } from "./page.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const root = path.join(here, "..");
+const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const MODEL = process.env.CLAUDE_MODEL ?? "claude-opus-5-5";
 const EFFORT = process.env.CLAUDE_EFFORT ?? "medium";
@@ -20,26 +20,21 @@ const app = express();
 app.set("trust proxy", 1); // detrás del proxy del hosting, para leer la IP real
 app.use(express.json({ limit: "256kb" }));
 
+// La página publicada en GitHub Pages llama a este servicio desde otro dominio.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "https://chozo-topacios.github.io").split(",").map((x) => x.trim()).filter(Boolean);
+app.use("/api", (req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400", Vary: "Origin" });
+  }
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
 // ---------- Página: el mismo HTML del artifact, envuelto en un documento completo ----------
-function buildPage() {
-  const fragment = fs.readFileSync(path.join(root, "artifact", "planificador.html"), "utf8");
-  return `<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
-<style>body{margin:0}</style>
-<script src="/claude-shim.js"></script>
-</head>
-<body>
-${fragment}
-</body>
-</html>`;
-}
 let page = buildPage();
 if (process.env.NODE_ENV !== "production") {
-  fs.watchFile(path.join(root, "artifact", "planificador.html"), { interval: 1000 }, () => { page = buildPage(); });
+  fs.watchFile(fragmentPath, { interval: 1000 }, () => { page = buildPage(); });
 }
 app.get("/", (_req, res) => res.type("html").send(page));
 app.use(express.static(path.join(root, "public")));

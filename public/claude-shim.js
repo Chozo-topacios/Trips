@@ -2,10 +2,14 @@
 // La página pide `claude.use("sample")` para armar guías; aquí esa llamada va al servidor propio (/api/json).
 // No hay base de datos ni usuario: la página guarda los viajes en el navegador de cada visitante.
 (() => {
+  const base = String(window.PLANIFICADOR_API || "").replace(/\/+$/, "");
+  // En GitHub Pages no hay servidor propio: sin dirección configurada, no hay cómo llamar a Claude.
+  const staticHost = /\.github\.io$/.test(location.hostname);
   async function json(prompt, opts = {}) {
+    if (!base && staticHost) throw { code: "no_backend", message: "Servicio de guías sin configurar." };
     let res;
     try {
-      res = await fetch("/api/json", {
+      res = await fetch(base + "/api/json", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),

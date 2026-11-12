@@ -475,6 +475,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     prompt_too_large: "La guía es muy grande para esta petición. Pide un cambio más puntual.",
     server_key: "El servicio no está configurado correctamente. Avísale a quien te compartió la página.",
     overloaded: "Claude está muy ocupado en este momento. Intenta de nuevo en unos minutos.",
+    no_backend: "El servicio que arma las guías todavía no está conectado. Avísale a quien te compartió la página.",
   }[code] || `Se cortó la conexión con Claude. Intenta otra vez${code ? ` (código: ${code})` : ""}.`);
 
   // Arma las actividades de los días indicados, de a dos días por petición. Guarda cada tanda al llegar.
