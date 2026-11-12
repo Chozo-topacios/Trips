@@ -275,14 +275,19 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   const store = {
     kind: null, col: null, queues: new Map(),
     async init(onChange, onError) {
+      this.onChange = onChange; this.onError = onError;
       let db = null, user = null;
       try { [db, user] = await Promise.all([claude.use("db"), claude.use("user")]); } catch {}
       const id = user ? await user.id().catch(() => null) : null;
-      if (db && id) {
+      // Quien abre la página por un enlace compartido puede no tener permiso para guardar en la cuenta:
+      // en ese caso sus viajes se guardan en su navegador.
+      const canWrite = typeof user?.can === "function" ? await user.can("data.write").catch(() => null) : null;
+      let forcedLocal = false; try { forcedLocal = localStorage.getItem("planificador.local") === "1"; } catch {}
+      if (db && id && canWrite !== false && !forcedLocal) {
         this.kind = "db";
         this.col = db.collection("data/users/" + id);
         const timer = setTimeout(() => onError("Tus viajes tardan en cargar. Revisa tu conexión."), 10000);
-        this.col.onSnapshot((snap) => {
+        this.unsub = this.col.onSnapshot((snap) => {
           if (!snap.metadata.fromCache) clearTimeout(timer);
           const m = new Map();
           snap.docs.forEach((d) => { const v = d.data(); if (v && v.tipo === "viaje") m.set(d.id, clone(v)); });
@@ -290,9 +295,17 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
         }, (e) => { clearTimeout(timer); onError(e.code === "revoked" ? "Ya no tienes acceso a tus viajes en esta página." : "No se pudieron cargar tus viajes."); });
       } else {
         this.kind = "local";
-        onError("Tus viajes se guardarán solo en este navegador (no se sincronizan con otros dispositivos).");
+        onError("Tus viajes se guardan en este navegador. Para verlos en otro dispositivo, ábrela con la cuenta de quien la creó.");
         onChange(this.readLocal(), false);
       }
+    },
+    // Si la cuenta rechaza la escritura (sin permiso), pasar a guardar en el navegador sin perder nada.
+    fallbackLocal(current) {
+      if (this.kind === "local") return;
+      this.kind = "local"; try { this.unsub?.(); } catch {}
+      try { localStorage.setItem("planificador.local", "1"); } catch {}
+      const m = this.readLocal(); current.forEach((v, k) => m.set(k, clone(v))); this.writeLocal(m);
+      this.onError?.("Tus viajes se guardan en este navegador. Para verlos en otro dispositivo, ábrela con la cuenta de quien la creó.");
     },
     readLocal() { try { return new Map(Object.entries(JSON.parse(localStorage.getItem("planificador.viajes") || "{}"))); } catch { return new Map(); } },
     writeLocal(m) { try { localStorage.setItem("planificador.viajes", JSON.stringify(Object.fromEntries(m))); } catch {} },
@@ -300,7 +313,10 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     save(trip) {
       trip.actualizado = new Date().toISOString();
       const copy = clone(trip);
-      if (this.kind === "db") return this.enqueue(trip.id, () => this.col.doc(trip.id).set(copy));
+      if (this.kind === "db") return this.enqueue(trip.id, () => this.col.doc(trip.id).set(copy)).catch((e) => {
+        if (e?.code !== "invalid_argument") throw e;
+        this.fallbackLocal(state.trips); return this.save(trip);
+      });
       const m = this.readLocal(); m.set(trip.id, copy); this.writeLocal(m); return Promise.resolve();
     },
     remove(id) {
