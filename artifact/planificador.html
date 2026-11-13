@@ -360,6 +360,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   const placeQ = (lugar, t) => (lugar && lugar.includes(",")) ? lugar : `${lugar || ""}, ${t.destino}`;
   const sumBudget = (p) => (p.presupuesto || []).reduce((s, x) => s + (Number(x.total) || 0), 0);
   const hoyISO = () => new Date().toISOString().slice(0, 10);
+  const FALLBACK_URL = "https://claude.ai/artifact/Tkk7RvUEKdyCwRJeuJ8FoT";
 
   // ================= Tooltip compartido =================
   const tip = $("tip");
@@ -547,7 +548,8 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       go("trip", t.id);
       fillDays(t.id, plan.dias.map((d) => d.id));
     } catch (e) {
-      if (e?.code && e.code !== "cancelled") { err.textContent = msgFor(e.code); err.hidden = false; }
+      if (e?.code === "no_backend") { err.replaceChildren(el("span", null, "Este enlace todavía no puede armar guías. "), a("Ábrelo en Claude aquí →", FALLBACK_URL)); err.hidden = false; }
+      else if (e?.code && e.code !== "cancelled") { err.textContent = msgFor(e.code); err.hidden = false; }
       else if (!e?.code) saveErr(e);
     } finally {
       st.hidden = true; $("create").disabled = false; $("cancel-gen").hidden = true;
@@ -1083,6 +1085,15 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
   window.addEventListener("scroll", hideTip, { passive: true });
 
   // ================= Arranque =================
+  if (window.PLANIFICADOR_SIN_SERVICIO) {
+    const box = el("div", "panel");
+    box.append(el("h3", null, "Para armar guías desde el teléfono"),
+      el("p", "muted", "Esta copia de la página todavía no está conectada a Claude. Usa la versión en Claude: inicia sesión (es gratis) y funciona igual, con tus viajes guardados en tu cuenta."));
+    const go2 = a("Abrir el planificador en Claude →", FALLBACK_URL, "btn primary"); go2.style.alignSelf = "flex-start";
+    box.append(go2);
+    box.style.marginBottom = "14px";
+    $("v-list").prepend(box);
+  }
   if (typeof window.claude?.use === "function") {
     // Sin sesión en Claude la página no puede armar guías ni guardar viajes: explicarlo claramente.
     const signInNote = () => {

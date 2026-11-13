@@ -5,6 +5,7 @@
   const base = String(window.PLANIFICADOR_API || "").replace(/\/+$/, "");
   // En GitHub Pages no hay servidor propio: sin dirección configurada, no hay cómo llamar a Claude.
   const staticHost = /\.github\.io$/.test(location.hostname);
+  window.PLANIFICADOR_SIN_SERVICIO = !base && staticHost;
   async function json(prompt, opts = {}) {
     if (!base && staticHost) throw { code: "no_backend", message: "Servicio de guías sin configurar." };
     let res;
