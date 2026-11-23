@@ -220,7 +220,10 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     <div class="panel">
       <div class="top">
         <h2>Mis viajes</h2>
-        <button class="btn primary" id="new" type="button">＋ Nuevo viaje</button>
+        <div class="actions">
+          <button class="btn" id="go-picnic" type="button">🧺 Rutas picnic</button>
+          <button class="btn primary" id="new" type="button">＋ Nuevo viaje</button>
+        </div>
       </div>
       <p class="status" id="list-loading">Cargando tus viajes…</p>
       <p class="notice" id="list-note" hidden></p>
@@ -460,6 +463,9 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
       c.append(row); box.append(c);
     });
   }
+  $("go-picnic").textContent = `🧺 Rutas picnic (${RUTAS.length})`;
+  $("go-picnic").hidden = !RUTAS.length;
+  $("go-picnic").onclick = () => $("picnic").scrollIntoView({ behavior: "smooth", block: "start" });
   $("picnic-all").onclick = async () => {
     const faltan = RUTAS.filter((r) => !state.trips.has(r.id));
     if (!faltan.length) { toast("Todas las rutas ya están en Mis viajes."); return; }
