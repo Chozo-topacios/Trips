@@ -158,13 +158,38 @@ ol.wk li::before { content: counter(wk); font-family: var(--f-display); font-wei
 #v-list { display: flex; flex-direction: column; gap: 14px; }
 #picnic { margin-top: 0 !important; }
 .tabbody .stats { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+/* Inicio por categorías */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.segbtn { font: inherit; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; min-width: 0; }
+.segbtn b { white-space: nowrap; }
+.segbtn .si { font-size: 24px; }
+.segbtn b { font-family: var(--f-display); font-size: 18px; }
+.segbtn .sn { font-size: 13px; font-weight: 700; background: var(--soft); color: var(--road); border-radius: 999px; padding: 1px 9px; }
+.segbtn[aria-selected="true"] { border-color: var(--road); background: var(--soft); }
+.segbtn[aria-selected="true"] .sn { background: var(--road); color: var(--road-ink); }
+.chip.sm { font-size: 12px; padding: 4px 10px; }
+.off { display: none !important; }
+.trip .months { width: 100%; align-self: stretch; }
+.trip .thumb.icon { height: 84px; }
+.trip .facts { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.trip .row2 { margin-top: auto; padding-top: 4px; }
+.estado { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+.estado.conocer { background: var(--bg); border: 1px dashed var(--line); color: var(--muted); }
+.estado.guardado { background: var(--soft); color: var(--road); }
+.estado.curso { background: var(--road); color: var(--road-ink); }
+.estado.visitado { color: var(--amber); }
+.cta { font-size: 13px; font-weight: 700; color: var(--road); }
+.falta { border-style: dashed; }
+.falta h3 { font-size: 18px; }
+.falta .btn { align-self: flex-start; }
+
 /* Mejores fechas */
 :root { --m-mejor: #0b7d58; --m-buena: #8fcfb4; --m-alta: #d8a24a; --m-evitar: #e1e6e3; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --m-mejor: #3fb58f; --m-buena: #23604c; --m-alta: #a8782a; --m-evitar: #26322d; } }
 :root[data-theme="dark"] { --m-mejor: #3fb58f; --m-buena: #23604c; --m-alta: #a8782a; --m-evitar: #26322d; }
 .months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
 .months .m { text-align: center; font-size: 12px; font-weight: 700; padding: 8px 0; border-radius: 5px; color: var(--ink); position: relative; }
-.months.mini { gap: 2px; } .months.mini .m { padding: 4px 0; font-size: 10px; border-radius: 3px; }
+.months.months-sm { gap: 2px; } .months.months-sm .m { padding: 4px 0; font-size: 10px; border-radius: 3px; }
 .m-mejor { background: var(--m-mejor); color: var(--road-ink) !important; } .m-buena { background: var(--m-buena); }
 .m-alta { background: var(--m-alta); } .m-evitar { background: var(--m-evitar); color: var(--muted) !important; }
 .months .m.now { outline: 2px solid var(--ink); outline-offset: -2px; }
@@ -353,39 +378,27 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     <div class="panel">
       <div class="top">
         <h2>Mis viajes</h2>
-        <div class="actions">
-          <button class="btn" id="go-picnic" type="button">🧺 Rutas picnic</button>
-          <button class="btn primary" id="new" type="button">＋ Nuevo viaje</button>
-        </div>
+        <button class="btn primary" id="new" type="button">＋ Nuevo viaje</button>
       </div>
       <p class="status" id="list-loading">Cargando tus viajes…</p>
       <p class="notice" id="list-note" hidden></p>
+      <div class="seg" id="seg" role="tablist" aria-label="Tipo de viaje"></div>
+      <div class="filters" id="filtros" role="group" aria-label="Estado"></div>
+      <div class="filters" id="filtros2" role="group" aria-label="Distancia"></div>
+      <div class="actions" id="picnic-tools"></div>
+      <div id="picnic-weekend"></div>
+      <div id="picnic-map" hidden></div>
       <div class="trips" id="trips"></div>
+      <div class="empty" id="empty" hidden>
+        <div class="road" aria-hidden="true"></div>
+        <h3 id="empty-t">No hay viajes aquí todavía</h3>
+        <p class="muted">Crea uno y te armo una guía completa día por día.</p>
+        <button class="btn primary" id="new2" type="button">Planear un viaje</button>
+      </div>
       <div class="actions">
         <button class="btn link" id="carro" type="button">⚙️ Mi carro y precios</button>
         <button class="btn link" id="transfer" type="button">📲 Pasar mis viajes a otro dispositivo</button>
       </div>
-      <div class="empty" id="empty" hidden>
-        <div class="road" aria-hidden="true"></div>
-        <h3>Aún no tienes viajes guardados</h3>
-        <p class="muted">Crea uno y te armo una guía completa día por día, con naturaleza, pueblos y sitios turísticos. Todo queda guardado para editarlo, moverlo o borrarlo cuando quieras, desde el celular o el computador.</p>
-        <button class="btn primary" id="new2" type="button">Planear mi primer viaje</button>
-      </div>
-    </div>
-    <div class="panel" id="destinos-panel" hidden>
-      <div><h2>✈️ Viajes de Leonardo</h2><p class="small muted">Planes completos con las mejores fechas para ir.</p></div>
-      <div class="routes" id="destinos-list"></div>
-    </div>
-    <div class="panel" id="picnic" style="margin-top:14px">
-      <div class="top">
-        <div><h2>🧺 Rutas picnic · Leonardo</h2><p class="small muted">Tus lugares de Google Maps, listos para ir en la iCAR 03T desde Bogotá.</p></div>
-        <button class="btn sm" id="picnic-all" type="button">Agregar todas a Mis viajes</button>
-      </div>
-      <div class="filters" id="picnic-filters" role="group" aria-label="Filtrar rutas"></div>
-      <div class="actions" id="picnic-tools"></div>
-      <div id="picnic-weekend"></div>
-      <div id="picnic-map" hidden></div>
-      <div class="routes" id="picnic-list"></div>
     </div>
   </section>
 
@@ -553,40 +566,96 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   }
   const hideTip = () => { tip.hidden = true; };
 
-  // ================= Mis viajes =================
-  function renderList() {
-    renderPicnic();
-    renderDestinos();
-    const box = $("trips"); box.replaceChildren();
-    const list = [...state.trips.values()].sort((x, y) => (y.actualizado || "").localeCompare(x.actualizado || ""));
-    $("empty").hidden = list.length > 0;
-    list.forEach((t) => {
-      const b = el("button", "trip"); b.type = "button";
-      if (t.fotos?.length) { const im = el("img", "thumb"); im.src = t.fotos[0].src; im.alt = ""; b.append(im); }
-      else { const ic = el("div", "thumb icon"); ic.textContent = (t.plan?.dias?.[0]?.actividades || []).filter((x) => !/trasl/i.test(x.tipo || "")).slice(0, 3).map(iconOf).join(" ") || (t.modo === "carro" ? "🚗" : "✈️"); b.append(ic); }
-      b.append(el("span", "kind", t.modo === "carro" ? "🚗 En carro" : "✈️ En avión"));
-      b.append(el("h3", null, t.plan?.titulo || t.destino));
-      const dias = t.plan?.dias?.length || t.dias;
-      b.append(el("span", "meta", `${t.destino} · ${dias} ${dias == 1 ? "día" : "días"} · ${t.viajeros} viajeros`));
-      b.append(el("span", "meta", `Desde ${t.origen}${t.fecha_inicio || t.plan?.fechas?.inicio ? " · 📅 " + fechaDia(t, 0) : ""}`));
-      if (t.visita) b.append(el("span", "stars-read small", `${estrellas(t.visita.estrellas || 0)} · visitado`));
-      else if ((t.hoy?.hechas || []).length) {
-        const tot = (t.plan?.dias || []).reduce((s2, d) => s2 + (d.actividades || []).length, 0) || 1;
-        const m = el("div", "meter"); const f = el("span"); f.style.width = Math.round((t.hoy.hechas.length / tot) * 100) + "%"; m.append(f);
-        b.append(el("span", "done", `▶ En curso · ${t.hoy.hechas.length}/${tot}`), m);
-      }
-      b.onclick = () => go("trip", t.id);
-      box.append(b);
+  // ================= Mis viajes: por tierra y por avión, todos con la misma tarjeta =================
+  const SEGS = [["carro", "🚗", "Por tierra"], ["avion", "✈️", "Por avión"]];
+  const ESTADOS = [["todos", "Todos"], ["guardados", "Mis viajes"], ["conocer", "Por conocer"], ["visitados", "Visitados"]];
+  const DISTANCIAS = [["todas", "Todas"], ["medio", "Cerca de Bogotá"], ["dia", "Un día"], ["finde", "Fin de semana"], ["largo", "Viaje largo"]];
+  const UI_KEY = "planificador.inicio";
+  let ui = { seg: "carro", estado: "todos", dist: "todas" };
+  try { ui = { ...ui, ...JSON.parse(localStorage.getItem(UI_KEY) || "{}") }; } catch {}
+  const setUi = (upd) => { ui = { ...ui, ...upd }; try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch {} renderList(); };
+  function grupoViaje(dias, km) { return dias >= 3 ? "largo" : dias === 2 ? "finde" : km != null && km <= 60 ? "medio" : "dia"; }
+  // Une el catálogo (rutas picnic y viajes sugeridos) con los viajes guardados: si ya está guardado, manda la versión guardada.
+  function catalogo() {
+    const m = new Map();
+    RUTAS.forEach((r) => m.set(r.id, { id: r.id, modo: "carro", nombre: r.nombre, lugar: r.municipio, dias: r.dias, km: r.km, tipo: r.tipo, plan: r.plan, fuente: "Ruta picnic", reserva: r.reserva, abrir: () => addRuta(r, true) }));
+    DESTINOS.forEach((d) => m.set(d.id, { id: d.id, modo: "avion", nombre: d.nombre, lugar: d.destino, dias: d.dias, viajeros: d.viajeros, plan: d.plan, fuente: "Viaje sugerido", abrir: () => addDestino(d) }));
+    state.trips.forEach((t) => {
+      const base = m.get(t.id) || {};
+      const ida = t.modo === "carro" ? Math.round(kmCarro(t) / (String(t.regreso || "").startsWith("Ida y vuelta") ? 2 : 1)) : null;
+      m.set(t.id, { ...base, id: t.id, modo: t.modo === "carro" ? "carro" : "avion", nombre: base.nombre || t.plan?.titulo || t.destino, lugar: base.lugar || t.destino,
+        dias: t.plan?.dias?.length || t.dias, km: base.km ?? ida, viajeros: t.viajeros, plan: t.plan || base.plan, trip: t, fuente: base.fuente || "Creado con Claude", abrir: () => go("trip", t.id) });
     });
+    return [...m.values()].map((x) => ({ ...x, grupo: grupoViaje(x.dias, x.km) }));
+  }
+  const estadoDe = (x) => !x.trip ? "conocer" : x.trip.visita ? "visitados" : "guardados";
+  function renderList() {
+    const all = catalogo();
+    // Segmento
+    const seg = $("seg"); seg.replaceChildren();
+    SEGS.forEach(([k, ic, lab]) => {
+      const n = all.filter((x) => x.modo === k).length;
+      const b = btn("segbtn", "", () => setUi({ seg: k, dist: "todas" }));
+      b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(ui.seg === k));
+      b.append(el("span", "si", ic), el("b", null, lab), el("span", "sn", String(n)));
+      seg.append(b);
+    });
+    const enSeg = all.filter((x) => x.modo === ui.seg);
+    // Estado
+    const f1 = $("filtros"); f1.replaceChildren();
+    ESTADOS.forEach(([k, lab]) => {
+      const n = k === "todos" ? enSeg.length : enSeg.filter((x) => estadoDe(x) === k).length;
+      if (k !== "todos" && !n) return;
+      const b = btn("chip", `${lab} · ${n}`, () => setUi({ estado: k })); b.setAttribute("aria-pressed", String(ui.estado === k)); f1.append(b);
+    });
+    // Distancia (solo por tierra)
+    const f2 = $("filtros2"); f2.replaceChildren(); f2.hidden = ui.seg !== "carro";
+    if (ui.seg === "carro") DISTANCIAS.forEach(([k, lab]) => {
+      const n = k === "todas" ? enSeg.length : enSeg.filter((x) => x.grupo === k).length;
+      if (k !== "todas" && !n) return;
+      const b = btn("chip sm", `${lab} · ${n}`, () => setUi({ dist: k })); b.setAttribute("aria-pressed", String(ui.dist === k)); f2.append(b);
+    });
+    ["picnic-tools", "picnic-weekend", "picnic-map"].forEach((id) => { const e = $(id); if (e) e.classList.toggle("off", ui.seg !== "carro"); });
+    // Lista
+    const box = $("trips"); box.replaceChildren();
+    const orden = (x) => (x.trip?.hoy?.hechas?.length && !x.trip.visita ? 0 : x.trip && !x.trip.visita ? 1 : !x.trip ? 2 : 3);
+    const lista = enSeg.filter((x) => (ui.estado === "todos" || estadoDe(x) === ui.estado) && (ui.seg !== "carro" || ui.dist === "todas" || x.grupo === ui.dist))
+      .sort((p2, q) => orden(p2) - orden(q) || (q.trip?.actualizado || "").localeCompare(p2.trip?.actualizado || "") || (p2.km ?? 0) - (q.km ?? 0) || p2.dias - q.dias);
+    $("empty").hidden = lista.length > 0;
+    $("empty-t").textContent = ui.seg === "carro" ? "No hay viajes por tierra con este filtro" : "No hay viajes en avión con este filtro";
+    lista.forEach((x) => box.append(tarjeta(x)));
+  }
+  // La misma tarjeta para todos los viajes.
+  function tarjeta(x) {
+    const t = x.trip;
+    const b = el("button", "trip"); b.type = "button"; b.onclick = x.abrir;
+    if (t?.fotos?.length) { const im = el("img", "thumb"); im.src = t.fotos[0].src; im.alt = ""; b.append(im); }
+    else { const ic = el("div", "thumb icon"); ic.textContent = ((x.plan?.dias || []).flatMap((d) => d.actividades || []).filter((a2) => !/trasl/i.test(a2.tipo || "")).slice(0, 3).map(iconOf).join(" ")) || (x.modo === "carro" ? "🚗" : "✈️"); b.append(ic); }
+    b.append(el("span", "kind", `${x.modo === "carro" ? "🚗 Por tierra" : "✈️ Por avión"} · ${x.fuente}`));
+    b.append(el("h3", null, x.nombre));
+    b.append(el("span", "meta", "📍 " + x.lugar));
+    const facts = el("div", "facts");
+    facts.append(el("span", null, `📅 ${x.dias} ${x.dias === 1 ? "día" : "días"}`));
+    if (x.modo === "carro" && x.km) facts.append(el("span", null, `🛣️ ${x.km} km`));
+    if (x.viajeros) facts.append(el("span", null, `👥 ${x.viajeros}`));
+    const tot = sumBudget(x.plan || {}); if (tot) facts.append(el("span", null, `💰 ${money(tot, x.plan?.moneda || "COP")}`));
+    b.append(facts);
+    if (x.plan?.fechas?.meses) b.append(mesesStrip(x.plan.fechas, true));
+    else b.append(el("span", "meta", "📅 Mejores fechas: por definir"));
+    const st = el("div", "row2");
+    if (!t) st.append(el("span", "estado conocer", "Por conocer"), el("span", "cta", "＋ Agregar y ver plan"));
+    else if (t.visita) st.append(el("span", "estado visitado", `${estrellas(t.visita.estrellas || 0)} visitado`), el("span", "cta", "Ver plan →"));
+    else if (t.hoy?.hechas?.length) {
+      const n = (t.plan?.dias || []).reduce((s2, d) => s2 + (d.actividades || []).length, 0) || 1;
+      st.append(el("span", "estado curso", `▶ En curso · ${t.hoy.hechas.length}/${n}`), el("span", "cta", "Seguir →"));
+    } else st.append(el("span", "estado guardado", "✓ En Mis viajes"), el("span", "cta", "Ver plan →"));
+    b.append(st);
+    return b;
   }
 
   // ================= Rutas picnic (lista de Google Maps de Leonardo) =================
   let RUTAS = [];
   try { RUTAS = JSON.parse(document.getElementById("rutas-picnic")?.textContent || "[]"); } catch { RUTAS = []; }
-  const GRUPOS = [["todas", "Todas"], ["pendientes", "Por conocer"], ["visitadas", "Visitadas"], ["medio", "Cerca de Bogotá"], ["dia", "Un día"], ["finde", "Fin de semana"], ["largo", "Viaje largo"]];
-  const grupoDe = (r) => r.dias >= 3 ? "largo" : r.dias === 2 ? "finde" : r.km <= 60 ? "medio" : "dia";
-  const visitada = (r) => !!state.trips.get(r.id)?.visita;
-  let filtroPicnic = "todas";
   function tripFromRuta(r) {
     return {
       tipo: "viaje", id: r.id, modo: "carro", destino: `${r.nombre} (${r.municipio.split(",")[0]})`, origen: "Bogotá", coords: { lat: r.lat, lng: r.lng },
@@ -603,44 +672,6 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     }
     if (open) go("trip", r.id); else renderList();
   }
-  function renderPicnic() {
-    const box = $("picnic-list"); if (!box) return;
-    $("picnic").hidden = !RUTAS.length;
-    const f = $("picnic-filters"); f.replaceChildren();
-    GRUPOS.forEach(([k, n]) => {
-      const cnt = k === "todas" ? RUTAS.length : k === "visitadas" ? RUTAS.filter(visitada).length : k === "pendientes" ? RUTAS.filter((r) => !visitada(r)).length : RUTAS.filter((r) => grupoDe(r) === k).length;
-      if (!cnt) return;
-      const b = btn("chip", `${n} · ${cnt}`, () => { filtroPicnic = k; renderPicnic(); });
-      b.setAttribute("aria-pressed", String(filtroPicnic === k)); f.append(b);
-    });
-    box.replaceChildren();
-    RUTAS.filter((r) => filtroPicnic === "todas" || (filtroPicnic === "visitadas" ? visitada(r) : filtroPicnic === "pendientes" ? !visitada(r) : grupoDe(r) === filtroPicnic)).sort((x, y) => x.km - y.km).forEach((r) => {
-      const c = el("article", "route");
-      c.append(el("span", "tag", r.tipo), el("h3", null, r.nombre), el("span", "meta", "📍 " + r.municipio));
-      const m = el("span", "meta"); m.append(el("span", "km", `${r.km} km`), document.createTextNode(` · ${r.horas} desde Bogotá · ${r.dias === 1 ? "1 día" : r.dias + " días"}`));
-      c.append(m);
-      const row = el("div", "row");
-      const ya = state.trips.has(r.id);
-      row.append(btn("btn sm primary", ya ? "Ver plan" : "Agregar y ver plan", () => addRuta(r, true)));
-      row.append(a("Mapa", L.route(["Bogotá", `${r.lat},${r.lng}`]), "btn link"));
-      const vis = state.trips.get(r.id)?.visita;
-      if (vis) c.append(el("span", "stars-read small", `${estrellas(vis.estrellas || 0)} · visitada`));
-      if (vis?.verif && verifTxt(vis.verif)) c.append(el("span", "verif small", "✔ " + verifTxt(vis.verif)));
-      if (r.reserva) c.append(el("span", "meta", "📅 Requiere reserva"));
-      if (ya) row.append(el("span", "done", vis ? "✓ Visitada" : "✓ En Mis viajes"));
-      c.append(row); box.append(c);
-    });
-  }
-  $("go-picnic").textContent = `🧺 Rutas picnic (${RUTAS.length})`;
-  $("go-picnic").hidden = !RUTAS.length;
-  $("go-picnic").onclick = () => $("picnic").scrollIntoView({ behavior: "smooth", block: "start" });
-  $("picnic-all").onclick = async () => {
-    const faltan = RUTAS.filter((r) => !state.trips.has(r.id));
-    if (!faltan.length) { toast("Todas las rutas ya están en Mis viajes."); return; }
-    for (const r of faltan) { const t = tripFromRuta(r); state.trips.set(t.id, t); }
-    renderList();
-    try { for (const r of faltan) await store.save(state.trips.get(r.id)); toast(`${faltan.length} rutas agregadas a Mis viajes.`); } catch (e) { saveErr(e); }
-  };
 
   // ================= Viajes sugeridos (avión) =================
   let DESTINOS = [];
@@ -657,23 +688,6 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     if (!state.trips.has(d.id)) { const t = tripFromDestino(d); state.trips.set(t.id, t); try { await store.save(t); } catch (e) { saveErr(e); } }
     go("trip", d.id);
   }
-  function renderDestinos() {
-    const box = $("destinos-list"); if (!box) return;
-    $("destinos-panel").hidden = !DESTINOS.length;
-    box.replaceChildren();
-    DESTINOS.forEach((d) => {
-      const c = el("article", "route");
-      const ya = state.trips.get(d.id);
-      c.append(el("span", "tag", "✈️ En avión"), el("h3", null, d.nombre), el("span", "meta", "📍 " + d.destino));
-      c.append(el("span", "meta", `${d.dias} días · ${d.viajeros} viajeros · ${money(sumBudget(d.plan), "COP")}`));
-      if (d.plan.fechas) c.append(mesesStrip(d.plan.fechas, true), el("span", "meta", "📅 " + d.plan.fechas.recomendadas));
-      if (ya?.visita) c.append(el("span", "stars-read small", estrellas(ya.visita.estrellas || 0)));
-      const row = el("div", "row");
-      row.append(btn("btn sm primary", ya ? "Ver plan" : "Agregar y ver plan", () => addDestino(d)));
-      if (ya) row.append(el("span", "done", "✓ En Mis viajes"));
-      c.append(row); box.append(c);
-    });
-  }
 
   // ---- Mejores fechas: barra de 12 meses
   const MESES = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
@@ -682,7 +696,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   function mesesStrip(f, mini) {
     const meses = Array.isArray(f?.meses) && f.meses.length === 12 ? f.meses : null;
     if (!meses) return el("span");
-    const row = el("div", "months" + (mini ? " mini" : "")); row.setAttribute("role", "img");
+    const row = el("div", "months" + (mini ? " months-sm" : "")); row.setAttribute("role", "img");
     row.setAttribute("aria-label", "Mejores meses: " + meses.map((m, i) => `${MESES_L[i]} ${NIVEL[m] || m}`).join(", "));
     const hoyM = new Date().getMonth();
     meses.forEach((m, i) => {
@@ -1102,8 +1116,23 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
   }
 
   // ---- Pestaña Itinerario: un día a la vez
+  // Apartado vacío: siempre visible, con un botón para que Claude lo complete.
+  function faltaBox(t, titulo, texto, pedido) {
+    const b = el("div", "panel falta");
+    b.append(el("h3", null, titulo), el("p", "small muted", texto), btn("btn sm primary", "✨ Completar con Claude", () => pedirClaude(t, pedido)));
+    return b;
+  }
+  function pedirClaude(t, pedido) {
+    state.tab = "plan"; renderTrip();
+    const det = document.querySelector("#v-trip details.pedir"); if (!det) return;
+    det.open = true; $("comp-text").value = pedido;
+    det.scrollIntoView({ behavior: "smooth", block: "center" });
+    det.querySelector("button.btn.primary")?.click();
+  }
+
   function tabPlan(t, p, body) {
-    const fb = fechasBox(p); if (fb) body.append(fb);
+    const fb = fechasBox(p);
+    body.append(fb || faltaBox(t, "📅 Mejores fechas para ir", "Este viaje aún no tiene las mejores fechas.", "Agrega las mejores fechas para este viaje (campo fechas: los 12 meses, fechas recomendadas, por qué y cuándo evitar)."));
     const days = el("div", "daytabs");
     p.dias.forEach((d, i) => {
       const b = btn("daytab", "", () => { state.diaSel = i; renderTrip(); });
@@ -1118,7 +1147,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     const d = p.dias[state.diaSel];
     if (d) body.append(renderDay(t, d, state.diaSel, p.dias.length));
     // Cambios con Claude, plegado
-    const det = el("details", "panel");
+    const det = el("details", "panel pedir");
     det.append(el("summary", null, "✨ Pedir cambios a Claude"));
     const ta = el("textarea"); ta.id = "comp-text"; ta.rows = 3; ta.placeholder = "Ej. agrega un día en Filandia · el día 2 quiero cascadas";
     const ca = el("div", "actions");
@@ -1283,6 +1312,18 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
         .forEach(([x, y]) => { const c = el("div"); c.append(el("b", null, x), el("span", null, y)); st.append(c); });
       b.append(st, el("p", "small muted", `Batería 34,3 kWh (~${aj.evKm} km) · ~${aj.kmGal} km/gal · ${money(aj.precioGal, "COP")}/gal · ${money(aj.precioKwh, "COP")}/kWh`), btn("btn link", "⚙️ Ajustar precios", carroSheet));
       body.append(b);
+    } else if (carro) {
+      body.append(faltaBox(t, "🔋⛽ Tu iCAR 03T en este viaje", "Faltan los kilómetros del trayecto para calcular batería y gasolina.", "Agrega en el día 1 el trayecto en carro (tramo con desde, hasta, km y horas) y el perfil de altura."));
+    } else {
+      const vuelos = (p.presupuesto || []).filter((x) => /vuelo|a[ée]reo|tiquete/i.test(x.concepto || ""));
+      const tv = vuelos.reduce((s2, x) => s2 + (Number(x.total) || 0), 0);
+      const b = el("div", "panel");
+      b.append(el("h2", null, "✈️ Vuelos y traslados"));
+      const st = el("div", "stats");
+      [[tv ? money(tv, cur) : "—", "vuelos (todo el grupo)"], [tv && t.viajeros ? money(tv / t.viajeros, cur) : "—", "por persona"], [total ? Math.round((tv / total) * 100) + " %" : "—", "del presupuesto"]]
+        .forEach(([x, y]) => { const c = el("div"); c.append(el("b", null, x), el("span", null, y)); st.append(c); });
+      const lk = el("div", "links"); lk.append(a("✈️ Buscar vuelos", L.vuelos(t.origen, String(t.destino).split(",")[0])), a("🚕 Del aeropuerto al centro", "https://www.google.com/search?q=" + encodeURIComponent("cómo llegar del aeropuerto al centro " + String(t.destino).split(",")[0])));
+      b.append(st, lk); body.append(b);
     }
     const g = el("div", "panel");
     const gt = el("div", "top"); gt.append(el("h2", null, "💸 Gastado"), btn("btn sm primary", "＋ Anotar gasto", () => gastoSheet(t)));
@@ -1290,6 +1331,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     const b = el("div", "panel"); b.id = "sec-presu";
     b.append(el("h2", null, `💰 Presupuesto · ${money(total, cur)}`), el("p", "small muted", `${money(total / (t.viajeros || 1), cur)} por persona · ${t.viajeros} viajeros`));
     if (total > 0) b.append(budgetBars(p.presupuesto, cur, total));
+    else b.append(el("p", "small muted", "Aún no hay presupuesto."), btn("btn sm primary", "✨ Completar con Claude", () => pedirClaude(t, "Agrega el presupuesto completo del viaje para todo el grupo (campo presupuesto).")));
     const det = el("details");
     det.append(el("summary", "small", "✎ Editar presupuesto"));
     const w = el("div", "tbl"), tb = el("table"), th = el("thead"), hr = el("tr");
@@ -1330,15 +1372,25 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
         lb.append(cb, el("span", cb.checked ? "done" : null, item)); li.append(lb); ul.append(li);
       });
       b.append(ul); body.append(b);
-    }
+    } else body.append(faltaBox(t, "🎒 Empacar", "Aún no hay lista de qué empacar ni datos del clima.", "Agrega el clima de la zona y la lista de qué empacar (campo clima con resumen, temperatura y que_llevar)."));
     if (carro) body.append(cargaPanel(t));
+    else {
+      const dest = String(t.destino).split(",")[0];
+      const b = el("div", "panel"); b.id = "sec-moverse";
+      b.append(el("h2", null, "🚕 Moverse allá"));
+      const lk = el("div", "links");
+      lk.append(a("🚇 Transporte público", "https://www.google.com/maps/dir/?" + new URLSearchParams({ api: "1", destination: dest, travelmode: "transit" })),
+        a("🚕 Taxi o app desde el aeropuerto", "https://www.google.com/search?q=" + encodeURIComponent("taxi seguro aeropuerto " + dest)),
+        a("🗺️ Mapa de " + dest, L.maps(dest)));
+      b.append(lk); body.append(b);
+    }
     const tips = [...(carro ? (p.energia || []).map((x) => ["🔋", x]) : []), ...(p.consejos || []).map((x) => ["💡", x])];
     if (tips.length) {
       const det = el("details", "panel");
       det.append(el("summary", null, `💡 Consejos (${tips.length})`));
       const ul = el("ul", "iconlist"); tips.forEach(([ic, x]) => { const li = el("li"); li.append(el("span", null, ic), el("span", null, String(x))); ul.append(li); });
       det.append(ul); body.append(det);
-    }
+    } else body.append(faltaBox(t, "💡 Consejos", "Aún no hay consejos para este viaje.", "Agrega 5 consejos prácticos para este viaje (campo consejos)."));
   }
 
   // ---- Pestaña Ideas
@@ -1376,6 +1428,8 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       });
       b.append(grid); body.append(b);
     }
+    if (!p.mas_ideas?.length) body.append(faltaBox(t, "🌿 Más lugares cerca", "Aún no hay lugares extra sugeridos.", "Agrega 6 lugares extra cercanos de naturaleza, pueblos o sitios turísticos (campo mas_ideas)."));
+    if (!p.gastronomia?.length) body.append(faltaBox(t, "🍲 Qué probar", "Aún no hay platos típicos sugeridos.", "Agrega 4 platos típicos de la zona y dónde probarlos (campo gastronomia)."));
     if (p.gastronomia?.length) {
       const b = el("div", "panel"); b.id = "sec-comida";
       b.append(el("h2", null, "🍲 Qué probar"));
@@ -1426,6 +1480,7 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
         dormir: d.dormir?.donde || null,
       })),
       presupuesto: tr.plan.presupuesto.map((x) => ({ concepto: x.concepto, total: x.total })),
+      tiene: { fechas: !!tr.plan.fechas, clima: !!tr.plan.clima, gastronomia: (tr.plan.gastronomia || []).length, mas_ideas: (tr.plan.mas_ideas || []).length, consejos: (tr.plan.consejos || []).length },
     };
     const prompt = `Eres el mejor guía de viajes de Colombia y Latinoamérica. Hoy es ${hoyISO()}.
 Viaje ${viajeTxt(tr)}.${contexto(tr)}
@@ -1440,7 +1495,9 @@ Devuelve SOLO lo que cambia, con este JSON:
 "dias":[{"n":2,"titulo":"...","actividades":[${ACT_FORMA}],"dormir":${DORMIR_FORMA}}],
 "nuevos_dias":[{"despues_de":3,"titulo":"...","tramo":null,"perfil":[],"actividades":[...],"dormir":{...}}],
 "quitar_dias":[],
-"presupuesto":null}
+"presupuesto":null,
+"fechas":null, "clima":null, "gastronomia":null, "mas_ideas":null, "consejos":null}
+Campos opcionales (null si no cambian): "fechas" {"meses":[12 valores de enero a diciembre: mejor|buena|alta|evitar],"recomendadas","inicio":"AAAA-MM-DD o vacío","por_que","evitar"}; "clima" {"resumen","temperatura","que_llevar":[...]}; "gastronomia" [{"plato","detalle","donde"}]; "mas_ideas" [{"titulo","detalle","lugar","tipo","duracion","costo"}]; "consejos" [textos].
 Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas sus actividades, con detalle), numerados como en la guía actual; conserva en ellos las actividades con "propia": true. "nuevos_dias" para días agregados ("despues_de" = número de día actual tras el que va; 0 = al inicio); si es trayecto en carro, incluye "tramo" {"desde","hasta","km","horas"} y "perfil" con altitudes. "quitar_dias": números a quitar. "presupuesto": null si no cambia, o la lista completa [{"concepto","detalle","total"}] si cambia. Responde SOLO con el JSON.`;
     send.disabled = true; stop.hidden = false; cs.hidden = false; cs.textContent = "Actualizando la guía… (menos de un minuto)";
     try {
@@ -1480,7 +1537,13 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
       });
       now.plan.dias = dias.filter((d) => !quitar.has(d.id));
       if (Array.isArray(r.presupuesto) && r.presupuesto.length) now.plan.presupuesto = r.presupuesto.map((x) => ({ ...x, id: uid(), total: Number(x.total) || 0 }));
-      if (!touched && !nuevos.length && !quitar.size && !Array.isArray(r.presupuesto)) throw { code: "invalid_json" };
+      let extras = 0;
+      if (r.fechas && Array.isArray(r.fechas.meses) && r.fechas.meses.length === 12) { now.plan.fechas = r.fechas; if (r.fechas.inicio && !now.fecha_inicio) now.fecha_inicio = r.fechas.inicio; extras++; }
+      if (r.clima && typeof r.clima === "object" && Array.isArray(r.clima.que_llevar)) { now.plan.clima = r.clima; extras++; }
+      if (Array.isArray(r.gastronomia) && r.gastronomia.length) { now.plan.gastronomia = r.gastronomia; extras++; }
+      if (Array.isArray(r.mas_ideas) && r.mas_ideas.length) { now.plan.mas_ideas = r.mas_ideas.map((x) => ({ ...x, id: uid() })); extras++; }
+      if (Array.isArray(r.consejos) && r.consejos.length) { now.plan.consejos = r.consejos.map(String); extras++; }
+      if (!touched && !nuevos.length && !quitar.size && !Array.isArray(r.presupuesto) && !extras) throw { code: "invalid_json" };
       now.dias = now.plan.dias.length;
       const cambios = typeof r.cambios === "string" && r.cambios ? r.cambios : "Guía actualizada.";
       now.historial = [...(now.historial || []), { fecha: new Date().toISOString(), texto: `Pediste: “${pedido}”. ${cambios}` }];
@@ -1667,7 +1730,7 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
     txt.append(el("span", "small muted", "Este fin de semana te sugiero"), el("h2", null, `${best.ico} ${best.nombre}`),
       el("span", "small", `${best.dn === "sáb" ? "Sábado" : "Domingo"}: 💧${best.rain} % de lluvia · ${best.min}–${best.max} °C · ${best.km} km`));
     const acts = el("div", "actions");
-    acts.append(btn("btn primary", "Ver plan", () => addRuta(r, true)), btn("btn sm", "Otras opciones", () => { $("picnic").scrollIntoView({ behavior: "smooth" }); weekendPicker($("picnic-weekend")); }));
+    acts.append(btn("btn primary", "Ver plan", () => addRuta(r, true)), btn("btn sm", "Otras opciones", () => { setUi({ seg: "carro" }); $("picnic-weekend").scrollIntoView({ behavior: "smooth", block: "center" }); weekendPicker($("picnic-weekend")); }));
     box.append(txt, acts); box.hidden = false;
   }
 

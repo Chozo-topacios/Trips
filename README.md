@@ -14,6 +14,9 @@ La página es la misma en ambos casos: `artifact/planificador.html`. El servidor
 
 ## Funciones
 
+- **Inicio por categorías**: 🚗 **Por tierra** y ✈️ **Por avión**, con todos los viajes juntos (guardados, rutas picnic y viajes sugeridos) en la misma tarjeta; filtros por estado (Mis viajes, Por conocer, Visitados) y, por tierra, por distancia.
+- **Mismos apartados en todos los viajes**: cada pestaña muestra siempre sus secciones; si a un viaje le falta algo (fechas, qué empacar, consejos, lugares, comida, presupuesto), aparece el espacio con **✨ Completar con Claude**.
+
 - **Viajes de Leonardo** (avión): Chile, ski en familia (7 días) y México, Día de Muertos (8 días), para 2 adultos y una niña de 9 años, con fechas sugeridas día por día. Se generan con `data/destinos.py`.
 - **Mejores fechas**: barra de 12 meses (mejor / buena / llena y cara / evitar), fechas recomendadas y por qué, en cada viaje (también en las rutas picnic y en las guías nuevas de Claude).
 
