@@ -434,6 +434,10 @@ def build(r):
                      "Sal temprano los fines de semana y festivos para evitar los trancones de salida y regreso.",
                      "No dejes basura en los sitios naturales y respeta las zonas de picnic autorizadas."],
         "energia": energia(r["energia_extra"], km_total),
+        "fechas": {"meses": ["mejor", "mejor", "buena", "evitar", "evitar", "buena", "mejor", "mejor", "buena", "evitar", "evitar", "mejor"],
+                   "recomendadas": "Diciembre a marzo y julio–agosto (temporadas secas)",
+                   "por_que": "En temporada seca los senderos están firmes, el cielo más despejado y las vías de montaña más seguras.",
+                   "evitar": "Abril–mayo y octubre–noviembre (lluvias: barro y derrumbes) y la salida de los puentes festivos (trancones)."},
     }
     flags = FLAGS.get(r["nombre"], (False, False))
     return {"id": "picnic-" + slug(r["nombre"]), "nombre": r["nombre"], "reserva": flags[0], "destapado": flags[1], "entrada": r["entrada"], "municipio": r["municipio"], "lat": r["lat"], "lng": r["lng"],

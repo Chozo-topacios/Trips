@@ -14,6 +14,9 @@ La página es la misma en ambos casos: `artifact/planificador.html`. El servidor
 
 ## Funciones
 
+- **Viajes de Leonardo** (avión): Chile, ski en familia (7 días) y México, Día de Muertos (8 días), para 2 adultos y una niña de 9 años, con fechas sugeridas día por día. Se generan con `data/destinos.py`.
+- **Mejores fechas**: barra de 12 meses (mejor / buena / llena y cara / evitar), fechas recomendadas y por qué, en cada viaje (también en las rutas picnic y en las guías nuevas de Claude).
+
 - **Guía gráfica por pestañas** (Itinerario · Dinero · Preparar · Ideas · Bitácora), **un día a la vez**, con línea de tiempo de íconos, barra horaria del día por tipo de actividad y detalles que se abren al tocar.
 - **Bitácora con fotos** (hasta 4 por viaje) y **verificación de la ruta** al visitarla (entrada, reserva, estado de la vía).
 - **Aviso del fin de semana** (versión abierta): la ruta por conocer con menos lluvia el sábado o domingo.
