@@ -6,6 +6,11 @@
   // En GitHub Pages no hay servidor propio: sin dirección configurada, no hay cómo llamar a Claude.
   const staticHost = /\.github\.io$/.test(location.hostname);
   window.PLANIFICADOR_SIN_SERVICIO = !base && staticHost;
+  window.PLANIFICADOR_OPEN = true; // versión abierta: puede consultar clima y mapas
+  // Funciona sin señal: guarda la página en el teléfono (service worker).
+  if ("serviceWorker" in navigator && window.isSecureContext) {
+    addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+  }
   async function json(prompt, opts = {}) {
     if (!base && staticHost) throw { code: "no_backend", message: "Servicio de guías sin configurar." };
     let res;

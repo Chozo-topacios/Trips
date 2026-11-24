@@ -16,6 +16,11 @@ export function buildPage({ base = "/" } = {}) {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Guías de viaje día por día en carro o avión: naturaleza, pueblos y sitios turísticos.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<link rel="manifest" href="${base}manifest.webmanifest">
+<link rel="apple-touch-icon" href="${base}icon-192.png">
+<meta name="theme-color" content="#13664f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Viajes">
 <style>body{margin:0}</style>
 <script src="${base}config.js"></script>
 <script src="${base}claude-shim.js"></script>

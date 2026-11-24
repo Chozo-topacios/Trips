@@ -12,6 +12,15 @@ Hay dos formas de usarla:
 
 La página es la misma en ambos casos: `artifact/planificador.html`. El servidor la envuelve y le da un reemplazo del runtime de Claude (`public/claude-shim.js`) que manda las peticiones a `/api/json`.
 
+## Funciones
+
+- **Guías con Claude**: plan general y luego actividades de a dos días; todo editable (mover, quitar, agregar, complementar con Claude).
+- **Rutas picnic · Leonardo**: 19 planes listos (lista de Google Maps) para la iCAR 03T, sin generar nada.
+- **Modo Hoy**: actividades del día con casillas, siguiente parada y botones para navegar con Google Maps o Waze.
+- **Compartir**: el plan como texto para WhatsApp.
+- **Pasar mis viajes a otro dispositivo**: código para copiar y pegar.
+- Solo en la versión abierta (GitHub Pages): **funciona sin señal** (se instala como app), **pronóstico del clima** de 7 días, **¿A dónde vamos este fin de semana?** (rutas con menos lluvia) y **mapa** de las rutas. En Claude la página no puede consultar servicios externos.
+
 ## Cómo funciona
 
 | Archivo | Qué hace |
@@ -21,6 +30,8 @@ La página es la misma en ambos casos: `artifact/planificador.html`. El servidor
 | `src/server.js` | Sirve la página y el endpoint `/api/json`, que llama a Claude con tu API key; límite de peticiones por IP |
 | `src/page.js`, `scripts/build-pages.mjs` | Arman el documento completo; la segunda genera `dist/` para GitHub Pages |
 | `.github/workflows/pages.yml` | Publica la página en GitHub Pages |
+| `public/sw.js`, `public/manifest.webmanifest`, íconos | Uso sin señal e instalación en el teléfono |
+| `data/rutas_picnic.py` | Genera las 19 rutas picnic y las incrusta en la página |
 | `render.yaml` | Configuración del servicio de guías en Render |
 
 La guía se arma en pasos cortos (plan general y luego de a dos días) para que ninguna petición se pase del tiempo máximo.
