@@ -2,7 +2,20 @@
 # de la lista de Google Maps "Rutas picnic" de Leonardo. Cifras aproximadas.
 import json, re, unicodedata
 
-COP_KM = 250  # costo aprox. por km (gasolina/energía, iCAR 03T de rango extendido)
+# Chery iCAR 03T REEV (Colombia). Ficha: batería LFP 34,31 kWh; 160 km eléctricos (NEDC);
+# 801 km combinados (WLTC) con tanque de 12 galones; generador 1.5 turbo; carga DC 90 kW.
+# Consumos estimados a partir de la ficha (no hay cifra oficial de consumo):
+#   eléctrico ≈ 24 kWh/100 km reales (34,31 kWh / 160 km NEDC, ajustado a uso real) → ~140 km con batería llena
+#   gasolina (generador) ≈ 52 km/galón ((801 − ~150 km eléctricos) / 12 galones ≈ 54; coincide con los 7,15 L/100 km WLTC del iCAR V25, mismo 1.5T)
+ICAR = {"ev_km": 140, "kwh_100": 24, "km_gal": 52, "precio_kwh": 800, "precio_gal": 16000}
+
+def estimar(km):
+    ev = min(km, ICAR["ev_km"]); gas = max(0, km - ev)
+    kwh = ev * ICAR["kwh_100"] / 100; gal = gas / ICAR["km_gal"]
+    return {"ev": ev, "gas": gas, "kwh": kwh, "gal": gal, "costo": int(round(kwh * ICAR["precio_kwh"] + gal * ICAR["precio_gal"], -3))}
+
+def dec(x):
+    return f"{x:.1f}".replace(".", ",")
 
 def slug(s):
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
@@ -15,8 +28,17 @@ PICNIC = ["Mantel o cobija impermeable", "Comida y agua (no hay tiendas cerca)",
 FRIO = ["Guantes y gorro (hace frío)", "Termo con bebida caliente"]
 CALOR = ["Ropa ligera y vestido de baño", "Toalla", "Sandalias para el agua"]
 
-def energia(extra):
-    base = ["Sal con la batería al 100 % (carga en casa la noche anterior) y el tanque lleno.",
+def energia(extra, km_total):
+    e = estimar(km_total)
+    if e["gas"] <= 0:
+        cuenta = f"Ida y vuelta son ~{km_total} km: con la batería al 100 % (34,3 kWh, ~140 km reales) lo haces todo en eléctrico, sin gastar gasolina."
+    else:
+        tanque = "de los 12 del tanque" if e["gal"] <= 12 else "(más que los 12 del tanque: tanquea en el camino y carga la batería en los hoteles)"
+        cuenta = (f"Ida y vuelta son ~{km_total} km: ~{e['ev']} km en eléctrico con la batería llena y ~{e['gas']} km con el generador, "
+                  f"unos {dec(e['gal'])} galones {tanque}.")
+    base = ["Carga la batería al 100 % la noche anterior en casa (34,3 kWh LFP; en LFP cargar al 100 % está bien).",
+            cuenta,
+            "Si en el destino hay cargador rápido (hasta 90 kW), del 30 % al 80 % tarda unos 20 minutos.",
             "En la ciudad y en los tramos planos usa el modo eléctrico; en carretera, el modo híbrido mantiene la batería sin parar a cargar."]
     return base + extra
 
@@ -371,6 +393,9 @@ def build(r):
             for i, (tit, acts, dd) in enumerate(r["dias_extra"]):
                 last = i == len(r["dias_extra"]) - 1
                 d = {"titulo": tit, "tramo": None, "perfil": [], "actividades": acts, "dormir": {"donde": dd[0], "por_que": "", "rango_noche": dd[1]} if dd else None}
+                if " → " in tit and not last:
+                    a, b = tit.split(" → ")
+                    d["tramo"] = {"desde": a, "hasta": b, "km": 200, "horas": "4 h 30 min"}
                 if last:
                     d["tramo"] = {"desde": "Manizales", "hasta": "Bogotá", "km": 300, "horas": "7 h"}
                     d["perfil"] = [{"lugar": "Manizales", "km": 0, "altitud_m": 2150}, {"lugar": "Fresno", "km": 90, "altitud_m": 1478}, {"lugar": "Honda", "km": 150, "altitud_m": 229}, {"lugar": "Alto del Trigo", "km": 210, "altitud_m": 2400}, {"lugar": "Bogotá", "km": 300, "altitud_m": 2600}]
@@ -382,10 +407,10 @@ def build(r):
         d["id"] = f"{slug(r['nombre'])[:24]}-d{di + 1}"
         for ai, a in enumerate(d["actividades"]):
             a["id"] = f"{d['id']}-a{ai + 1}"
-    km_total = r["km"] * 2 if r["dias"] < 5 else 1000
+    km_total = r["km"] * 2 if r["dias"] < 5 else 1200
     noches = r["dias"] - 1
     presupuesto = [
-        {"concepto": "Gasolina y energía (ida y vuelta)", "detalle": f"~{km_total} km con la iCAR 03T (aprox. ${COP_KM}/km)", "total": km_total * COP_KM},
+        {"concepto": "Energía y gasolina (ida y vuelta)", "detalle": (lambda e: f"~{km_total} km: {e['kwh']:.0f} kWh de la batería (~$800/kWh en casa)" + (f" + {dec(e['gal'])} gal (~$16.000/gal)" if e['gal'] > 0 else ""))(estimar(km_total)), "total": estimar(km_total)["costo"]},
         {"concepto": "Peajes (ida y vuelta)", "detalle": "Automóvil categoría I, aprox.", "total": r["peajes"] * 2},
         {"concepto": "Entradas y actividades", "detalle": r["entrada"], "total": 30000 * 2 if r["dias"] == 1 else 50000 * 2},
         {"concepto": "Comida del picnic", "detalle": "Mercado para 2 personas", "total": 60000 * r["dias"]},
@@ -406,7 +431,7 @@ def build(r):
         "consejos": [f"Ruta: {r['via']}.", r["entrada"] + ". Confirma precios y horarios antes de ir.",
                      "Sal temprano los fines de semana y festivos para evitar los trancones de salida y regreso.",
                      "No dejes basura en los sitios naturales y respeta las zonas de picnic autorizadas."],
-        "energia": energia(r["energia_extra"]),
+        "energia": energia(r["energia_extra"], km_total),
     }
     return {"id": "picnic-" + slug(r["nombre"]), "nombre": r["nombre"], "municipio": r["municipio"], "lat": r["lat"], "lng": r["lng"],
             "km": r["km"], "horas": r["horas"], "dias": r["dias"], "tipo": r["tipo"], "plan": plan}

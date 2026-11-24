@@ -81,6 +81,12 @@ Abre http://localhost:3000.
 | `RATE_LIMIT_PER_HOUR` | `40` | Peticiones por IP por hora (una guía de 4 días usa unas 3) |
 | `PORT` | `3000` | Puerto |
 
+## Datos de la iCAR 03T
+
+Tomados de la ficha publicada en Colombia (Chery y prensa automotriz): batería LFP (CATL) de **34,31 kWh**, **160 km** eléctricos (NEDC), **801 km** combinados (WLTC) con tanque de **12 galones**, generador **1.5 turbo** que no mueve las ruedas, carga rápida DC de hasta **90 kW** (30→80 % en ~20 min).
+
+No hay una cifra oficial de consumo, así que la app usa estimaciones a partir de esa ficha: **~24 kWh/100 km** en eléctrico (~140 km reales con la batería llena) y **~52 km/galón** con el generador ((801 − ~150 km eléctricos) / 12 galones ≈ 54 km/gal, en línea con los 7,15 L/100 km WLTC del iCAR V25, que usa el mismo generador). Precios de referencia: $800/kWh en casa y $16.000/galón. Se ajustan en `ICAR` (página) y en `data/rutas_picnic.py`.
+
 ## Costos y cuidados
 
 - Cada guía y cada "Complementar" consumen tu saldo de la API. Pon un **límite de gasto mensual** en la consola de Anthropic.
