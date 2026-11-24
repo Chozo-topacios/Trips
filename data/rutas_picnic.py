@@ -376,6 +376,8 @@ add(nombre="Farallones de Sutatausa", municipio="Sutatausa, Cundinamarca", lat=5
     ideas=[("Laguna Verde","Laguna de páramo en Tausa, muy cerca.","Tausa, Cundinamarca","naturaleza"),("Laguna de Fúquene","A 30 min de Ubaté.","Fúquene, Cundinamarca","naturaleza")],
     comida=[("Queso y kumis","Ubaté")])
 
+FLAGS = {'Laguna Siecha': (True, True), 'Laguna de Guatavita': (True, False), 'Laguna de Iguaque': (True, False), 'Cascadas Santuario San Miguel': (True, False), 'Laguna Verde': (False, True), 'Cascada El Hoyo': (False, False), 'Laguna de Pantano Redondo': (False, True), 'Laguna Brava': (False, True)}
+
 def build(r):
     q = lambda n, m: f"{n}, {m}"
     destino = r["municipio"].split(",")[0]
@@ -433,7 +435,8 @@ def build(r):
                      "No dejes basura en los sitios naturales y respeta las zonas de picnic autorizadas."],
         "energia": energia(r["energia_extra"], km_total),
     }
-    return {"id": "picnic-" + slug(r["nombre"]), "nombre": r["nombre"], "municipio": r["municipio"], "lat": r["lat"], "lng": r["lng"],
+    flags = FLAGS.get(r["nombre"], (False, False))
+    return {"id": "picnic-" + slug(r["nombre"]), "nombre": r["nombre"], "reserva": flags[0], "destapado": flags[1], "entrada": r["entrada"], "municipio": r["municipio"], "lat": r["lat"], "lng": r["lng"],
             "km": r["km"], "horas": r["horas"], "dias": r["dias"], "tipo": r["tipo"], "plan": plan}
 
 out = [build(r) for r in R]

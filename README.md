@@ -17,6 +17,11 @@ La página es la misma en ambos casos: `artifact/planificador.html`. El servidor
 - **Guías con Claude**: plan general y luego actividades de a dos días; todo editable (mover, quitar, agregar, complementar con Claude).
 - **Rutas picnic · Leonardo**: 19 planes listos (lista de Google Maps) para la iCAR 03T, sin generar nada.
 - **Modo Hoy**: actividades del día con casillas, siguiente parada y botones para navegar con Google Maps o Waze.
+- **Antes de salir**: lista para marcar según cada viaje (batería, gasolina que necesita, llantas, efectivo para peajes, reservas, tramos destapados, mapa sin señal, avisar a alguien).
+- **Cargar y tanquear**: enlaces a cargadores y estaciones cerca del destino; en la versión abierta, cargadores públicos sobre la ruta (OpenStreetMap).
+- **Gastos reales**: anotar en dos toques lo que se gasta (gasolina, peaje, comida…) y compararlo con el presupuesto.
+- **Bitácora**: calificar con estrellas y anotar cómo estuvo; las rutas picnic muestran cuáles ya visitaste.
+- **Mi carro y precios**: precio del galón y del kWh (y consumos) ajustables; todos los cálculos se actualizan.
 - **Compartir**: el plan como texto para WhatsApp.
 - **Pasar mis viajes a otro dispositivo**: código para copiar y pegar.
 - Solo en la versión abierta (GitHub Pages): **funciona sin señal** (se instala como app), **pronóstico del clima** de 7 días, **¿A dónde vamos este fin de semana?** (rutas con menos lluvia) y **mapa** de las rutas. En Claude la página no puede consultar servicios externos.
