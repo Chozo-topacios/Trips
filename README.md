@@ -14,6 +14,10 @@ La página es la misma en ambos casos: `artifact/planificador.html`. El servidor
 
 ## Funciones
 
+- **Guía gráfica por pestañas** (Itinerario · Dinero · Preparar · Ideas · Bitácora), **un día a la vez**, con línea de tiempo de íconos, barra horaria del día por tipo de actividad y detalles que se abren al tocar.
+- **Bitácora con fotos** (hasta 4 por viaje) y **verificación de la ruta** al visitarla (entrada, reserva, estado de la vía).
+- **Aviso del fin de semana** (versión abierta): la ruta por conocer con menos lluvia el sábado o domingo.
+
 - **Guías con Claude**: plan general y luego actividades de a dos días; todo editable (mover, quitar, agregar, complementar con Claude).
 - **Rutas picnic · Leonardo**: 19 planes listos (lista de Google Maps) para la iCAR 03T, sin generar nada.
 - **Modo Hoy**: actividades del día con casillas, siguiente parada y botones para navegar con Google Maps o Waze.

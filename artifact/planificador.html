@@ -155,6 +155,80 @@ ol.wk li::before { content: counter(wk); font-family: var(--f-display); font-wei
 .stars-read.small { font-size: 14px; letter-spacing: 1px; }
 .trip .done, .route .done { font-size: 12px; font-weight: 600; color: var(--road); }
 
+#v-list { display: flex; flex-direction: column; gap: 14px; }
+#picnic { margin-top: 0 !important; }
+.tabbody .stats { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+/* Guía gráfica */
+:root { --c-nat: #1baf7a; --c-pue: #2a78d6; --c-com: #eb6834; --c-tra: #6250d6; --c-des: #eda100; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c-nat: #199e70; --c-pue: #3987e5; --c-com: #d95926; --c-tra: #9085e9; --c-des: #c98500; } }
+:root[data-theme="dark"] { --c-nat: #199e70; --c-pue: #3987e5; --c-com: #d95926; --c-tra: #9085e9; --c-des: #c98500; }
+.c-nat { --cc: var(--c-nat); } .c-pue { --cc: var(--c-pue); } .c-com { --cc: var(--c-com); } .c-tra { --cc: var(--c-tra); } .c-des { --cc: var(--c-des); }
+.hero-title { font-size: 28px; }
+.statchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.statchip { display: inline-flex; gap: 6px; align-items: center; background: var(--soft); border-radius: 999px; padding: 5px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.btn.big { padding: 12px 18px; font-size: 16px; }
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; background: var(--bg); padding: 6px 0; }
+.tab { font: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; min-width: 0; }
+.tab .ti { font-size: 20px; line-height: 1; }
+.tab .tl { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tab[aria-selected="true"] { background: var(--road); border-color: var(--road); color: var(--road-ink); }
+.tabbody { display: flex; flex-direction: column; gap: 14px; }
+.daytabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.daytab { font: inherit; flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 76px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.daytab b { font-family: var(--f-display); font-size: 15px; }
+.daytab span { font-size: 13px; letter-spacing: 1px; }
+.daytab[aria-pressed="true"] { border: 2px solid var(--road); background: var(--soft); }
+.daytab.add { justify-content: center; font-size: 20px; min-width: 52px; color: var(--road); }
+.daybar-wrap { display: flex; flex-direction: column; gap: 6px; }
+.daybar { position: relative; height: 34px; background: var(--soft); border-radius: 8px; }
+.daybar .seg { position: absolute; top: 3px; bottom: 3px; background: var(--cc); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 14px; overflow: hidden; cursor: pointer; }
+.ticks { position: relative; height: 16px; }
+.ticks span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ticks span:first-child { transform: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend .sw { width: 10px; height: 10px; border-radius: 3px; background: var(--cc); display: inline-block; }
+ol.tl { list-style: none; margin: 0; padding: 0; position: relative; }
+ol.tl::before { content: ""; position: absolute; left: 17px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+.tli { position: relative; display: grid; grid-template-columns: 36px 1fr; gap: 10px; padding: 4px 0; }
+.dot { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 17px; background: var(--surface); border: 3px solid var(--cc); position: relative; z-index: 1; flex: none; }
+.dot.sm { width: 28px; height: 28px; font-size: 14px; border-width: 2px; }
+.tc { min-width: 0; }
+.trow { font: inherit; width: 100%; display: grid; grid-template-columns: 46px 1fr auto; gap: 8px; align-items: center; text-align: left; background: none; border: 0; color: var(--ink); padding: 7px 0; cursor: pointer; }
+.trow .th { font-family: var(--f-display); font-weight: 600; color: var(--road); font-variant-numeric: tabular-nums; }
+.trow .tt { font-weight: 600; min-width: 0; }
+.pills { display: inline-flex; gap: 4px; align-items: center; }
+.pill2 { font-size: 11px; color: var(--muted); background: var(--soft); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.chev { color: var(--muted); font-size: 12px; }
+.tmore { display: flex; flex-direction: column; gap: 6px; padding: 0 0 10px 54px; }
+.tmore p { font-size: 14px; }
+.evbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; gap: 2px; font-size: 13px; font-weight: 600; }
+.evbar span { display: flex; align-items: center; justify-content: center; white-space: nowrap; min-width: 70px; }
+.evbar .ev { background: var(--chart); color: var(--road-ink); }
+.evbar .gas { background: var(--amber); color: var(--surface); }
+.packgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.packgrid label { display: flex; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; cursor: pointer; background: var(--bg); }
+.packgrid input { width: auto; }
+.packgrid .done { text-decoration: line-through; color: var(--muted); }
+.iconlist { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.iconlist li { display: grid; grid-template-columns: 24px 1fr; gap: 6px; font-size: 14px; }
+.ihead { display: flex; gap: 8px; align-items: center; }
+.ihead .dot { width: 30px; height: 30px; font-size: 14px; border-width: 2px; }
+.foodgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.foodcard { display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); text-decoration: none; }
+details > summary { cursor: pointer; font-weight: 600; }
+details.panel > summary { font-family: var(--f-display); font-size: 18px; }
+.gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.gallery img, .addphoto { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; max-width: 100%; }
+.addphoto { font: inherit; font-size: 12px; white-space: pre-line; border: 2px dashed var(--line); background: var(--bg); color: var(--muted); }
+.bigphoto { width: 100%; border-radius: 10px; }
+.verif { font-size: 13px; color: var(--road); font-weight: 600; }
+.trip .thumb { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; max-width: 100%; }
+.trip .thumb.icon { display: flex; align-items: center; justify-content: center; font-size: 34px; letter-spacing: 6px; background: var(--soft); }
+.finde { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; border: 2px solid var(--road); background: var(--soft); }
+.finde-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.finde h2 { font-size: 24px; }
+
 /* Guía */
 #v-trip { display: flex; flex-direction: column; gap: 14px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
@@ -258,6 +332,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
 
   <!-- Vista: Mis viajes -->
   <section id="v-list">
+    <div class="panel finde" id="finde" hidden></div>
     <div class="panel">
       <div class="top">
         <h2>Mis viajes</h2>
@@ -346,7 +421,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
   const NS = "http://www.w3.org/2000/svg";
   const svgEl = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; };
 
-  const state = { trips: new Map(), view: "list", currentId: null, mode: "carro", sample: null, ctl: null, editing: null, filling: new Set() };
+  const state = { trips: new Map(), view: "list", currentId: null, mode: "carro", sample: null, ctl: null, editing: null, filling: new Set(), tab: "plan", diaSel: 0, open: new Set() };
 
   // ================= Almacenamiento (espacio privado del usuario; respaldo: navegador) =================
   const store = {
@@ -405,6 +480,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
 
   // ================= Navegación =================
   function go(view, id) {
+    if (view === "trip" && id !== state.currentId) { state.tab = "plan"; state.diaSel = 0; state.open = new Set(); }
     state.view = view; state.currentId = id ?? null; state.editing = null;
     $("v-list").hidden = view !== "list";
     $("v-new").hidden = view !== "new";
@@ -463,13 +539,19 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
     $("empty").hidden = list.length > 0;
     list.forEach((t) => {
       const b = el("button", "trip"); b.type = "button";
+      if (t.fotos?.length) { const im = el("img", "thumb"); im.src = t.fotos[0].src; im.alt = ""; b.append(im); }
+      else { const ic = el("div", "thumb icon"); ic.textContent = (t.plan?.dias?.[0]?.actividades || []).filter((x) => !/trasl/i.test(x.tipo || "")).slice(0, 3).map(iconOf).join(" ") || (t.modo === "carro" ? "🚗" : "✈️"); b.append(ic); }
       b.append(el("span", "kind", t.modo === "carro" ? "🚗 En carro" : "✈️ En avión"));
       b.append(el("h3", null, t.plan?.titulo || t.destino));
       const dias = t.plan?.dias?.length || t.dias;
       b.append(el("span", "meta", `${t.destino} · ${dias} ${dias == 1 ? "día" : "días"} · ${t.viajeros} viajeros`));
       b.append(el("span", "meta", `Desde ${t.origen}`));
       if (t.visita) b.append(el("span", "stars-read small", `${estrellas(t.visita.estrellas || 0)} · visitado`));
-      else if ((t.hoy?.hechas || []).length) b.append(el("span", "done", "▶ En curso"));
+      else if ((t.hoy?.hechas || []).length) {
+        const tot = (t.plan?.dias || []).reduce((s2, d) => s2 + (d.actividades || []).length, 0) || 1;
+        const m = el("div", "meter"); const f = el("span"); f.style.width = Math.round((t.hoy.hechas.length / tot) * 100) + "%"; m.append(f);
+        b.append(el("span", "done", `▶ En curso · ${t.hoy.hechas.length}/${tot}`), m);
+      }
       b.onclick = () => go("trip", t.id);
       box.append(b);
     });
@@ -520,6 +602,7 @@ tr.total td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--in
       row.append(a("Mapa", L.route(["Bogotá", `${r.lat},${r.lng}`]), "btn link"));
       const vis = state.trips.get(r.id)?.visita;
       if (vis) c.append(el("span", "stars-read small", `${estrellas(vis.estrellas || 0)} · visitada`));
+      if (vis?.verif && verifTxt(vis.verif)) c.append(el("span", "verif small", "✔ " + verifTxt(vis.verif)));
       if (r.reserva) c.append(el("span", "meta", "📅 Requiere reserva"));
       if (ya) row.append(el("span", "done", vis ? "✓ Visitada" : "✓ En Mis viajes"));
       c.append(row); box.append(c);
@@ -801,7 +884,66 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     return box;
   }
 
-  // ================= Guía del viaje =================
+  // ================= Guía del viaje (gráfica, por pestañas y un día a la vez) =================
+  // Tipos de actividad agrupados en 5 categorías con color + ícono (paleta validada; siempre con leyenda e ícono).
+  const CATS_ACT = {
+    nat: { label: "Naturaleza", icon: "🌿" }, pue: { label: "Pueblos y sitios", icon: "🏘️" },
+    com: { label: "Comida", icon: "🍽️" }, tra: { label: "Traslado", icon: "🚗" }, des: { label: "Descanso", icon: "🛏" },
+  };
+  const ICONO_TIPO = { naturaleza: "🌿", mirador: "🏔️", aventura: "🧗", pueblo: "🏘️", cultura: "🎭", "sitio turístico": "📸", comida: "🍽️", traslado: "🚗", descanso: "🛏", noche: "🌙", propia: "⭐" };
+  function catOf(tipo) {
+    const k = String(tipo || "").toLowerCase();
+    if (/natur|mirador|aventur|cascad|lagun/.test(k)) return "nat";
+    if (/comida|almuerzo|restaur/.test(k)) return "com";
+    if (/trasl|salida|regreso/.test(k)) return "tra";
+    if (/descans|noche|hotel/.test(k)) return "des";
+    return "pue";
+  }
+  const iconOf = (x) => x.propia ? "⭐" : (ICONO_TIPO[String(x.tipo || "").toLowerCase()] || CATS_ACT[catOf(x.tipo)].icon);
+  function minutos(h) { const m = /^(\d{1,2}):(\d{2})/.exec(h || ""); return m ? +m[1] * 60 + +m[2] : null; }
+  function durMin(s) {
+    s = String(s || "").toLowerCase();
+    if (/medio d/.test(s)) return 240; if (/d[ií]a/.test(s)) return 480;
+    const h = /(\d+(?:[.,]\d+)?)\s*h/.exec(s), m = /(\d+)\s*min/.exec(s);
+    const v = (h ? parseFloat(h[1].replace(",", ".")) * 60 : 0) + (m ? +m[1] : 0);
+    return v || null;
+  }
+  const hhmm = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+  // Barra del día: cada actividad ocupa su franja horaria, coloreada por categoría.
+  function dayBar(d) {
+    const acts = (d.actividades || []).map((x) => ({ x, s: minutos(x.hora) })).filter((o) => o.s != null).sort((p, q) => p.s - q.s);
+    if (acts.length < 2) return null;
+    acts.forEach((o, k) => {
+      const next = acts[k + 1]?.s; const dm = durMin(o.x.duracion);
+      o.e = next != null ? Math.min(next, o.s + (dm || next - o.s)) : o.s + (dm || 60);
+      if (o.e <= o.s) o.e = o.s + 30;
+    });
+    const a0 = Math.floor(acts[0].s / 60) * 60, a1 = Math.ceil(Math.max(...acts.map((o) => o.e)) / 60) * 60, span = a1 - a0 || 60;
+    const wrap = el("div", "daybar-wrap");
+    wrap.append(el("p", "chart-title", "Así se ve tu día"));
+    const bar = el("div", "daybar"); bar.setAttribute("role", "img");
+    bar.setAttribute("aria-label", "Horario del día: " + acts.map((o) => `${o.x.hora} ${o.x.titulo}`).join(", "));
+    acts.forEach((o) => {
+      const seg = el("span", "seg c-" + (o.x.propia ? "pue" : catOf(o.x.tipo)), iconOf(o.x));
+      seg.style.left = ((o.s - a0) / span * 100) + "%"; seg.style.width = `calc(${((o.e - o.s) / span * 100)}% - 2px)`;
+      seg.tabIndex = 0;
+      const show = () => { const r = seg.getBoundingClientRect(); showTip([o.x.titulo, `${hhmm(o.s)}–${hhmm(o.e)} · ${CATS_ACT[catOf(o.x.tipo)].label}`], r.left + r.width / 2, r.top); };
+      seg.addEventListener("pointerenter", show); seg.addEventListener("focus", show); seg.addEventListener("click", show);
+      seg.addEventListener("pointerleave", hideTip); seg.addEventListener("blur", hideTip);
+      bar.append(seg);
+    });
+    const ticks = el("div", "ticks");
+    for (let m = a0; m <= a1; m += span > 600 ? 180 : 120) { const tk = el("span", null, hhmm(m).replace(":00", "h")); tk.style.left = ((m - a0) / span * 100) + "%"; ticks.append(tk); }
+    const legend = el("div", "legend");
+    const presentes = [...new Set(acts.map((o) => catOf(o.x.tipo)))];
+    presentes.forEach((c) => { const l = el("span"); l.append(el("i", "sw c-" + c), document.createTextNode(`${CATS_ACT[c].icon} ${CATS_ACT[c].label}`)); legend.append(l); });
+    wrap.append(bar, ticks, legend);
+    return wrap;
+  }
+
+  const TABS = [["plan", "📅", "Itinerario"], ["dinero", "💰", "Dinero"], ["preparar", "🎒", "Preparar"], ["ideas", "🌿", "Ideas"], ["bitacora", "📓", "Bitácora"]];
+
   function renderTrip() {
     hideTip();
     const v = $("v-trip"); v.replaceChildren();
@@ -814,224 +956,82 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
     const carro = t.modo === "carro";
     const total = sumBudget(p);
     const km = kmCarro(t);
+    state.tab = state.tab || "plan";
+    state.diaSel = Math.min(state.diaSel || 0, Math.max(0, p.dias.length - 1));
 
-    // ---- Encabezado
-    const head = el("div", "panel");
+    // ---- Encabezado compacto
+    const head = el("div", "panel hero");
     const top = el("div", "top");
-    const delWrap = el("div", "actions");
-    delWrap.append(btn("btn sm danger", "Borrar viaje", () => {
-      delWrap.replaceChildren(el("span", "small", "¿Borrar este viaje?"),
-        btn("btn sm danger", "Sí, borrar", async () => { state.trips.delete(t.id); go("list"); try { await store.remove(t.id); toast("Viaje borrado."); } catch (e) { saveErr(e); } }),
-        btn("btn sm", "No", () => renderTrip()));
-    }));
     const back = btn("btn sm", "← Mis viajes"); back.dataset.go = "list";
-    top.append(back, delWrap);
-    head.append(top, el("span", "small muted", `${carro ? "🚗 En carro" : "✈️ En avión"} · ${t.origen} → ${t.destino} · ${t.viajeros} viajeros · ritmo ${String(t.ritmo || "").toLowerCase()}`));
-    head.append(el("h2", null, p.titulo || t.destino));
-    if (p.resumen) head.append(el("p", "muted", p.resumen));
-    if (t.descripcion) head.append(el("p", "notice", "Tu descripción: " + t.descripcion));
-    const stats = el("div", "stats");
-    [[`${p.dias.length} ${p.dias.length === 1 ? "día" : "días"}`, `${p.dias.reduce((s, d) => s + d.actividades.length, 0)} actividades`],
-     [money(total, cur), "presupuesto total"], [money(total / (t.viajeros || 1), cur), "por persona"],
-     ...(carro && km ? [[`${km.toLocaleString("es-CO")} km`, "en carro (aprox.)"]] : [])]
-      .forEach(([b, s]) => { const c = el("div"); c.append(el("b", null, b), el("span", null, s)); stats.append(c); });
-    head.append(stats);
-    const tools2 = el("div", "actions");
-    tools2.append(btn("btn primary", "▶ Modo Hoy", () => go("hoy", t.id)), btn("btn", "📤 Compartir", () => shareTrip(t)));
-    head.append(tools2);
-    if (OPEN) head.append(weatherBox(t));
-    const links = el("div", "links");
-    if (carro) links.append(a("🗺️ Ruta en Google Maps", L.route([t.origen, t.destino])));
-    else links.append(a("✈️ Buscar vuelos", L.vuelos(t.origen, t.destino)));
-    links.append(a("🏨 Hoteles", L.hoteles(t.destino)), a("📷 Fotos", L.fotos(t.destino)), a("🌦️ Clima", L.clima(t.destino)), a("▶️ Videos", L.videos(`${t.destino} qué hacer`)), a("📖 Info", L.info(t.destino)));
-    head.append(links);
-    const toc = el("nav", "toc"); toc.setAttribute("aria-label", "Ir a");
-    const jump = (n, id) => { const x = el("a", null, n); x.href = "#" + id; x.onclick = (e) => { e.preventDefault(); $(id)?.scrollIntoView({ behavior: "smooth" }); }; toc.append(x); };
-    p.dias.forEach((d, i) => jump(`Día ${i + 1}`, "dia-" + (i + 1)));
-    if (p.mas_ideas?.length) jump("Ideas", "sec-ideas");
-    if (p.gastronomia?.length) jump("Comida", "sec-comida");
-    jump("Presupuesto", "sec-presu");
-    if (p.clima) jump("Empacar", "sec-clima");
-    head.append(toc);
+    top.append(back, el("span", "small muted", carro ? "🚗 En carro" : "✈️ En avión"));
+    head.append(top, el("h2", "hero-title", p.titulo || t.destino));
+    head.append(el("p", "small muted", `${t.origen} → ${t.destino}`));
+    const chips = el("div", "statchips");
+    [["📅", `${p.dias.length} ${p.dias.length === 1 ? "día" : "días"}`], ["💰", money(total, cur)], ["👤", money(total / (t.viajeros || 1), cur)], ...(carro && km ? [["🛣️", `${km.toLocaleString("es-CO")} km`]] : [])]
+      .forEach(([i2, tx]) => { const c = el("span", "statchip"); c.append(el("span", null, i2), el("b", null, tx)); chips.append(c); });
+    head.append(chips);
+    if (t.visita) head.append(el("p", "stars-read", `${estrellas(t.visita.estrellas || 0)}`));
+    const acts = el("div", "actions");
+    acts.append(btn("btn primary big", "▶ Modo Hoy", () => go("hoy", t.id)), btn("btn big", "📤 Compartir", () => shareTrip(t)));
+    head.append(acts);
     const pend = p.dias.filter((d) => d.pendiente);
     if (state.filling.size) {
       const row = el("div", "actions");
-      const done = p.dias.length - pend.length;
-      row.append(el("span", "status", `Paso 2 de 2: armando las actividades día por día (${done} de ${p.dias.length} listos)…`), btn("btn sm", "Detener", () => state.ctl?.abort()));
+      row.append(el("span", "status", `Armando los días (${p.dias.length - pend.length} de ${p.dias.length})…`), btn("btn sm", "Detener", () => state.ctl?.abort()));
       head.append(row);
     } else if (pend.length) {
       const row = el("div", "actions");
-      row.append(el("span", "small muted", `${pend.length} ${pend.length === 1 ? "día sin" : "días sin"} actividades todavía.`),
+      row.append(el("span", "small muted", `${pend.length} ${pend.length === 1 ? "día sin" : "días sin"} actividades.`),
         btn("btn sm primary", pend.length === 1 ? "Armar ese día" : "Armar días pendientes", () => fillDays(t.id, pend.map((d) => d.id))));
       head.append(row);
     }
     v.append(head);
-    v.append(checklistBox(t, false));
 
-    // ---- Días
-    p.dias.forEach((d, i) => v.append(renderDay(t, d, i, p.dias.length)));
-    v.append(btn("btn", "＋ Agregar día", () => mutate((tr) => tr.plan.dias.push({ id: uid(), titulo: "Día libre", tramo: null, perfil: [], actividades: [] }), "Agregaste un día al final.")));
+    // ---- Pestañas
+    const tabs = el("nav", "tabs"); tabs.setAttribute("role", "tablist");
+    TABS.forEach(([k, ic, lab]) => {
+      const b = btn("tab", "", () => { state.tab = k; renderTrip(); window.scrollTo({ top: head.offsetTop + head.offsetHeight - 8, behavior: "smooth" }); });
+      b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(state.tab === k));
+      b.append(el("span", "ti", ic), el("span", "tl", lab)); tabs.append(b);
+    });
+    v.append(tabs);
 
-    // ---- Más ideas
-    if (p.mas_ideas?.length) {
-      const b = el("div", "panel"); b.id = "sec-ideas";
-      b.append(el("h2", null, "🌿 Más ideas cerca"), el("p", "small muted", "Naturaleza, pueblos y sitios que no están en el plan. Agrégalos al día que quieras."));
-      const grid = el("div", "ideas");
-      p.mas_ideas.forEach((idea) => {
-        const c = el("article", "idea");
-        c.append(el("h3", null, idea.titulo || ""));
-        const m = el("div", "mini"); if (idea.tipo) m.append(el("span", "tag", idea.tipo)); if (idea.duracion) m.append(el("span", "small muted", "⏱ " + idea.duracion)); if (idea.costo) m.append(el("span", "small muted", "💲 " + idea.costo));
-        c.append(m);
-        if (idea.detalle) c.append(el("p", null, idea.detalle));
-        const q = placeQ(idea.lugar || idea.titulo, t);
-        const lk = el("div", "mini"); lk.append(a("Mapa", L.maps(q)), a("Fotos", L.fotos(q)), a("Info", L.info(idea.titulo))); c.append(lk);
-        const add = el("div", "add");
-        const sel = el("select"); sel.id = "idea-dia-" + idea.id; sel.setAttribute("aria-label", "Día");
-        p.dias.forEach((_, k) => { const o = el("option", null, `Día ${k + 1}`); o.value = k; sel.append(o); });
-        add.append(sel, btn("btn sm primary", "＋ Agregar", () => {
-          const k = Number(sel.value);
-          mutate((tr) => {
-            tr.plan.dias[k].actividades.push({ id: uid(), hora: "", titulo: idea.titulo, detalle: idea.detalle, lugar: idea.lugar, tipo: idea.tipo, duracion: idea.duracion, costo: idea.costo });
-            tr.plan.mas_ideas = tr.plan.mas_ideas.filter((x) => x.id !== idea.id);
-          }, `Agregaste “${idea.titulo}” al día ${k + 1}.`, `Agregado al día ${k + 1}.`);
-        }));
-        if (!p.dias.length) add.hidden = true;
-        c.append(add);
-        grid.append(c);
-      });
-      b.append(grid); v.append(b);
-    }
+    const body = el("div", "tabbody");
+    v.append(body);
+    if (state.tab === "plan") tabPlan(t, p, body);
+    else if (state.tab === "dinero") tabDinero(t, p, body, { cur, total, km, carro });
+    else if (state.tab === "preparar") tabPreparar(t, p, body, { carro, km });
+    else if (state.tab === "ideas") tabIdeas(t, p, body, { carro });
+    else tabBitacora(t, p, body);
+  }
 
-    // ---- Gastronomía
-    if (p.gastronomia?.length) {
-      const b = el("div", "panel"); b.id = "sec-comida";
-      b.append(el("h2", null, "🍲 Qué comer"));
-      const ul = el("ul", "food");
-      p.gastronomia.forEach((g) => {
-        const li = el("li"); li.append(el("strong", null, g.plato || ""));
-        if (g.detalle) li.append(el("span", "small", g.detalle));
-        const m = el("div", "mini"); if (g.donde) m.append(el("span", "small muted", "📍 " + g.donde)); m.append(a("Fotos", L.fotos(`${g.plato} ${t.destino}`))); li.append(m);
-        ul.append(li);
-      });
-      b.append(ul); v.append(b);
-    }
-
-    // ---- Presupuesto (gráfica + tabla editable)
-    {
-      const b = el("div", "panel"); b.id = "sec-presu";
-      b.append(el("h2", null, "💰 Presupuesto"));
-      if (total > 0) { b.append(el("p", "chart-title", `En qué se va el dinero (${cur}, todo el grupo)`)); b.append(budgetBars(p.presupuesto, cur, total)); }
-      const w = el("div", "tbl"), tb = el("table"), th = el("thead"), hr = el("tr");
-      hr.append(el("th", null, "Concepto"), el("th", null, "Total"), el("th", null, "")); th.append(hr);
-      const body = el("tbody");
-      p.presupuesto.forEach((r) => {
-        r.id = r.id || uid();
-        const tr = el("tr");
-        const c1 = el("td"); const i1 = el("input"); i1.id = "pc-" + r.id; i1.value = r.concepto || ""; i1.setAttribute("aria-label", "Concepto");
-        i1.onchange = () => mutate((x) => { const y = x.plan.presupuesto.find((z) => z.id === r.id); if (y) y.concepto = i1.value; }, "Editaste el presupuesto.");
-        c1.append(i1);
-        const c2 = el("td", "n"); const i2 = el("input"); i2.id = "pt-" + r.id; i2.inputMode = "numeric"; i2.value = Math.round(r.total || 0).toLocaleString("es-CO"); i2.setAttribute("aria-label", "Total");
-        i2.onchange = () => { const n = Number(i2.value.replace(/[^\d]/g, "")) || 0; mutate((x) => { const y = x.plan.presupuesto.find((z) => z.id === r.id); if (y) y.total = n; }, `Cambiaste “${r.concepto}” a ${money(n, cur)}.`); };
-        c2.append(i2);
-        const c3 = el("td"); c3.append(btn("ic del", "✕", () => mutate((x) => { x.plan.presupuesto = x.plan.presupuesto.filter((y) => y.id !== r.id); }, `Quitaste “${r.concepto}” del presupuesto.`, "Concepto quitado."), "Quitar concepto"));
-        tr.append(c1, c2, c3); body.append(tr);
-      });
-      const tot = el("tr", "total"); tot.append(el("td", null, `Total · ${money(total / (t.viajeros || 1), cur)} por persona`), el("td", "n", money(total, cur)), el("td")); tot.children[1].style.textAlign = "right"; body.append(tot);
-      tb.append(th, body); w.append(tb); b.append(w);
-      b.append(btn("btn link", "＋ Agregar concepto", () => mutate((x) => x.plan.presupuesto.push({ id: uid(), concepto: "Nuevo gasto", total: 0 }), "Agregaste un concepto al presupuesto.")));
-      v.append(b);
-    }
-
-    // ---- Gastos reales y bitácora
-    {
-      const g = el("div", "panel"); g.id = "sec-gastos";
-      const gt = el("div", "top"); gt.append(el("h2", null, "💸 Gastos del viaje"), btn("btn sm primary", "＋ Anotar gasto", () => gastoSheet(t)));
-      g.append(gt, gastosBox(t, true)); v.append(g);
-    }
-    v.append(visitaBox(t));
-
-    // ---- Clima y qué empacar
-    if (p.clima) {
-      const b = el("div", "panel"); b.id = "sec-clima";
-      b.append(el("h2", null, "🌦️ Clima y qué empacar"));
-      b.append(el("p", null, [p.clima.temperatura && `🌡️ ${p.clima.temperatura}.`, p.clima.resumen].filter(Boolean).join(" ")));
-      if (p.clima.que_llevar?.length) {
-        const ul = el("ul", "check");
-        p.clima.que_llevar.forEach((item, k) => {
-          const li = el("li"); const lb = el("label"); const cb = el("input"); cb.type = "checkbox"; cb.id = `pack-${k}`;
-          cb.checked = (t.empacado || []).includes(item);
-          cb.onchange = () => mutate((x) => { const s = new Set(x.empacado || []); cb.checked ? s.add(item) : s.delete(item); x.empacado = [...s]; });
-          lb.append(cb, document.createTextNode(item)); li.append(lb); ul.append(li);
-        });
-        b.append(ul);
-      }
-      v.append(b);
-    }
-
-    // ---- Consejos
-    const tipsSec = (title, items) => {
-      if (!Array.isArray(items) || !items.length) return;
-      const b = el("div", "panel"); b.append(el("h2", null, title));
-      const ul = el("ul", "tips"); items.forEach((x) => ul.append(el("li", null, String(x)))); b.append(ul); v.append(b);
-    };
-    if (carro && km) {
-      // Cálculo propio con la ficha de la iCAR 03T (no depende de lo que escribió Claude).
-      const e = estimarICAR(km);
-      const b = el("div", "panel");
-      b.append(el("h2", null, "🔋⛽ Tu iCAR 03T en este viaje"));
-      const st = el("div", "stats");
-      [[`${km.toLocaleString("es-CO")} km`, "en carro en total"], [`${Math.round(e.ev)} km`, "en eléctrico (batería llena)"],
-       [e.gal > 0 ? `${e.gal.toFixed(1).replace(".", ",")} gal` : "0 gal", e.gal > 0 ? `de gasolina (${Math.round(e.gas)} km con generador)` : "todo en eléctrico"],
-       [money(e.costo, "COP"), "energía + gasolina, aprox."]]
-        .forEach(([x, y]) => { const c = el("div"); c.append(el("b", null, x), el("span", null, y)); st.append(c); });
-      b.append(st);
-      const aj = ajustes();
-      b.append(el("p", "small muted", `Con la ficha de la iCAR 03T: batería de 34,3 kWh (~${aj.evKm} km reales en eléctrico, ~${aj.kwh100} kWh/100 km), generador 1.5 turbo (~${aj.kmGal} km/galón), tanque de 12 galones${e.gal > ICAR.tanqueGal ? ". Este viaje necesita tanquear en el camino" : ""}. Precios: ${money(aj.precioKwh, "COP")}/kWh en casa y ${money(aj.precioGal, "COP")}/galón.`));
-      b.append(btn("btn link", "⚙️ Ajustar precios y consumo", carroSheet));
-      v.append(b);
-      v.append(cargaPanel(t));
-    }
-    if (carro) tipsSec("🔋⛽ Batería y gasolina", p.energia);
-    tipsSec("💡 Consejos", p.consejos);
-
-    // ---- Complementar con Claude
-    const comp = el("div", "panel");
-    comp.append(el("h2", null, "✨ Complementar con Claude"));
-    comp.append(el("p", "muted small", "Pide cambios y Claude actualiza la guía: agregar días, cambiar actividades, más naturaleza, opciones más baratas, dónde comer…"));
-    const ta = el("textarea"); ta.id = "comp-text"; ta.rows = 3; ta.placeholder = "Ej. agrega un día en Filandia · el día 2 quiero cascadas · busca un pueblo para almorzar en el camino";
+  // ---- Pestaña Itinerario: un día a la vez
+  function tabPlan(t, p, body) {
+    const days = el("div", "daytabs");
+    p.dias.forEach((d, i) => {
+      const b = btn("daytab", "", () => { state.diaSel = i; renderTrip(); });
+      b.setAttribute("aria-pressed", String(i === state.diaSel));
+      b.append(el("b", null, `Día ${i + 1}`), el("span", null, (d.actividades || []).slice(0, 4).map(iconOf).join("") || (d.pendiente ? "⏳" : "—")));
+      days.append(b);
+    });
+    days.append(btn("daytab add", "＋", () => { mutate((tr) => tr.plan.dias.push({ id: uid(), titulo: "Día libre", tramo: null, perfil: [], actividades: [] }), "Agregaste un día al final."); state.diaSel = p.dias.length; renderTrip(); }, "Agregar día"));
+    body.append(days);
+    const d = p.dias[state.diaSel];
+    if (d) body.append(renderDay(t, d, state.diaSel, p.dias.length));
+    // Cambios con Claude, plegado
+    const det = el("details", "panel");
+    det.append(el("summary", null, "✨ Pedir cambios a Claude"));
+    const ta = el("textarea"); ta.id = "comp-text"; ta.rows = 3; ta.placeholder = "Ej. agrega un día en Filandia · el día 2 quiero cascadas";
     const ca = el("div", "actions");
-    const send = btn("btn primary", "Actualizar guía");
-    const stop = btn("btn", "Detener", () => state.ctl?.abort()); stop.hidden = true;
+    const send = btn("btn primary", "Actualizar guía"); const stop = btn("btn", "Detener", () => state.ctl?.abort()); stop.hidden = true;
     ca.append(send, stop);
-    const cs = el("p", "status"); cs.hidden = true;
-    const ce = el("p", "err"); ce.hidden = true;
+    const cs = el("p", "status"); cs.hidden = true; const ce = el("p", "err"); ce.hidden = true;
     send.onclick = () => complement(ta, send, stop, cs, ce);
-    comp.append(ta, ca, cs, ce);
-    v.append(comp);
-
-    // ---- Notas
-    const notes = el("div", "panel");
-    notes.append(el("h2", null, "📝 Mis notas"));
-    const nt = el("textarea"); nt.id = "notes"; nt.rows = 3; nt.placeholder = "Reservas, números de confirmación, contactos…"; nt.value = t.notas || "";
-    const ns = el("span", "small muted");
-    let timer = null;
-    nt.oninput = () => { clearTimeout(timer); ns.textContent = ""; timer = setTimeout(async () => { const tr = state.trips.get(t.id); if (!tr || tr.notas === nt.value) return; tr.notas = nt.value; try { await store.save(tr); ns.textContent = "Guardado"; } catch (e) { saveErr(e); } }, 800); };
-    notes.append(nt, ns);
-    v.append(notes);
-
-    // ---- Historial
-    if (t.historial?.length) {
-      const h = el("div", "panel"); h.append(el("h2", null, "Cambios"));
-      const ul = el("ul", "log");
-      [...t.historial].reverse().slice(0, 30).forEach((c) => { const li = el("li"); li.append(el("span", "muted", new Date(c.fecha).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }) + " · "), document.createTextNode(c.texto)); ul.append(li); });
-      h.append(ul); v.append(h);
-    }
-    v.append(el("p", "notice", "Guía de Claude sin consulta en vivo: confirma precios, horarios, peajes y disponibilidad antes de reservar."));
+    det.append(ta, ca, cs, ce); body.append(det);
   }
 
   function renderDay(t, d, i, nDays) {
     const box = el("div", "panel"); box.id = "dia-" + (i + 1);
-    // Encabezado del día (título editable)
     const dh = el("div", "dayhead");
     dh.append(el("span", "sign", `Día ${i + 1}`));
     if (state.editing === "title-" + d.id) {
@@ -1044,135 +1044,271 @@ ${idxs.includes(p.dias.length - 1) ? `El día ${p.dias.length} es el último: "d
       dh.append(el("h3", null, d.titulo || ""));
       const tools = el("div", "tools");
       tools.append(btn("ic", "✎", () => { state.editing = "title-" + d.id; renderTrip(); }, "Editar título del día"));
-      const up = btn("ic", "↑", () => mutate((tr) => { const l = tr.plan.dias; [l[i - 1], l[i]] = [l[i], l[i - 1]]; }, `Moviste el día ${i + 1} antes.`), "Mover día antes"); up.disabled = i === 0;
-      const dn = btn("ic", "↓", () => mutate((tr) => { const l = tr.plan.dias; [l[i + 1], l[i]] = [l[i], l[i + 1]]; }, `Moviste el día ${i + 1} después.`), "Mover día después"); dn.disabled = i === nDays - 1;
-      tools.append(up, dn, btn("ic del", "✕", () => mutate((tr) => { tr.plan.dias.splice(i, 1); }, `Quitaste el día ${i + 1} (${d.titulo}).`, "Día quitado."), "Quitar día"));
+      const up = btn("ic", "←", () => { mutate((tr) => { const l = tr.plan.dias; [l[i - 1], l[i]] = [l[i], l[i - 1]]; }, `Moviste el día ${i + 1} antes.`); state.diaSel = i - 1; renderTrip(); }, "Mover día antes"); up.disabled = i === 0;
+      const dn = btn("ic", "→", () => { mutate((tr) => { const l = tr.plan.dias; [l[i + 1], l[i]] = [l[i], l[i + 1]]; }, `Moviste el día ${i + 1} después.`); state.diaSel = i + 1; renderTrip(); }, "Mover día después"); dn.disabled = i === nDays - 1;
+      tools.append(up, dn, btn("ic del", "✕", () => { mutate((tr) => { tr.plan.dias.splice(i, 1); }, `Quitaste el día ${i + 1} (${d.titulo}).`, "Día quitado."); state.diaSel = Math.max(0, i - 1); renderTrip(); }, "Quitar día"));
       dh.append(tools);
     }
     box.append(dh);
 
-    // Trayecto + perfil de altura
     if (d.tramo && d.tramo.desde) {
       const leg = el("div", "leg");
-      leg.append(el("b", null, `${d.tramo.desde} → ${d.tramo.hasta}`));
-      leg.append(el("span", null, [d.tramo.km && `${d.tramo.km} km`, d.tramo.horas].filter(Boolean).join(" · ")));
+      leg.append(el("b", null, `🚗 ${d.tramo.desde} → ${d.tramo.hasta}`), el("span", null, [d.tramo.km && `${d.tramo.km} km`, d.tramo.horas].filter(Boolean).join(" · ")));
       const stops = d.actividades.filter((x) => x.lugar && x.tipo !== "traslado").map((x) => x.lugar);
-      leg.append(a("Ver ruta con paradas", L.route([d.tramo.desde, ...stops, d.tramo.hasta]), "btn link"));
+      leg.append(a("🗺️ Ruta", L.route([d.tramo.desde, ...stops, d.tramo.hasta]), "btn link"));
       box.append(leg);
-      if (d.perfil?.length >= 2) {
-        box.append(el("p", "chart-title", "Perfil de altura del trayecto (pasa el dedo o el mouse por la gráfica)"));
-        box.append(elevationChart(d.perfil));
-      }
+      if (d.perfil?.length >= 2) box.append(elevationChart(d.perfil));
     }
-
-    // Día en preparación o pendiente
     if (state.filling.has(d.id)) box.append(el("p", "status", "Armando las actividades de este día…"));
     else if (d.pendiente) {
       const row = el("div", "actions");
-      row.append(el("span", "small " + (d.error && d.error !== "detenido" ? "err" : "muted"), d.error && d.error !== "detenido" ? d.error : "Este día aún no tiene actividades."),
-        btn("btn sm primary", "Armar este día", () => fillDays(t.id, [d.id])));
+      row.append(el("span", "small " + (d.error && d.error !== "detenido" ? "err" : "muted"), d.error && d.error !== "detenido" ? d.error : "Este día aún no tiene actividades."), btn("btn sm primary", "Armar este día", () => fillDays(t.id, [d.id])));
       box.append(row);
     }
-    if (d.foco && d.pendiente) box.append(el("p", "small muted", d.foco));
+    const bar = dayBar(d); if (bar) box.append(bar);
 
-    // Actividades
-    const ul = el("ul", "acts");
+    const ul = el("ol", "tl");
     d.actividades.forEach((x, ai) => ul.append(renderAct(t, d, i, x, ai, nDays)));
-    if (!d.actividades.length && !d.pendiente && !state.filling.has(d.id)) ul.append(el("li", "small muted", "Sin actividades. Agrega una abajo, trae una de “Más ideas” o pídele a Claude."));
+    if (!d.actividades.length && !d.pendiente && !state.filling.has(d.id)) ul.append(el("li", "small muted", "Sin actividades: agrega una o trae ideas de la pestaña 🌿 Ideas."));
     box.append(ul);
 
     const places = d.actividades.filter((x) => x.lugar && x.tipo !== "traslado").map((x) => placeQ(x.lugar, t));
-    if (!d.tramo && places.length >= 2) box.append(a("🗺️ Recorrido del día en Google Maps", L.route(places), "btn link"));
+    const row = el("div", "actions");
+    if (!d.tramo && places.length >= 2) row.append(a("🗺️ Recorrido del día", L.route(places), "btn sm"));
+    const addB = btn("btn sm", "＋ Actividad", () => { state.editing = state.editing === "add-" + d.id ? null : "add-" + d.id; renderTrip(); });
+    row.append(addB);
+    box.append(row);
+    if (state.editing === "add-" + d.id) {
+      const f = el("form", "addform");
+      const h = el("input"); h.type = "time"; h.id = `add-h-${d.id}`; h.setAttribute("aria-label", "Hora");
+      const tx = el("input"); tx.id = `add-t-${d.id}`; tx.placeholder = "Qué quieres hacer"; tx.setAttribute("aria-label", "Actividad");
+      const lg = el("input"); lg.id = `add-l-${d.id}`; lg.placeholder = "Lugar (opcional)"; lg.setAttribute("aria-label", "Lugar");
+      const ok = el("button", "btn sm primary", "Agregar"); ok.type = "submit";
+      f.append(h, tx, lg, ok);
+      f.onsubmit = (e) => { e.preventDefault(); if (!tx.value.trim()) { tx.focus(); return; } const item = { id: uid(), hora: h.value, titulo: tx.value.trim(), lugar: lg.value.trim(), propia: true }; state.editing = null; mutate((tr) => insertByTime(tr.plan.dias[i].actividades, item), `Agregaste “${item.titulo}” al día ${i + 1}.`); };
+      box.append(f); setTimeout(() => tx.focus());
+    }
 
-    // Dormir (editable)
     if (state.editing === "sleep-" + d.id) {
       const f = el("div", "edit");
       const i1 = el("input"); i1.id = "sd-" + d.id; i1.value = d.dormir?.donde || "";
       const i2 = el("input"); i2.id = "sr-" + d.id; i2.value = d.dormir?.rango_noche || "";
       const l1 = el("label", "f wide", "Dónde dormir"); l1.append(i1);
       const l2 = el("label", "f", "Precio por noche"); l2.append(i2);
-      const acts = el("div", "actions wide");
-      acts.append(btn("btn sm primary", "Guardar", () => { state.editing = null; mutate((tr) => { tr.plan.dias[i].dormir = { ...(tr.plan.dias[i].dormir || {}), donde: i1.value.trim(), rango_noche: i2.value.trim() }; }, `Cambiaste dónde dormir el día ${i + 1}.`); }),
-        btn("btn sm", "Cancelar", () => { state.editing = null; renderTrip(); }));
-      f.append(l1, l2, acts); box.append(f);
-      setTimeout(() => i1.focus());
+      const ac = el("div", "actions wide");
+      ac.append(btn("btn sm primary", "Guardar", () => { state.editing = null; mutate((tr) => { tr.plan.dias[i].dormir = { ...(tr.plan.dias[i].dormir || {}), donde: i1.value.trim(), rango_noche: i2.value.trim() }; }, `Cambiaste dónde dormir el día ${i + 1}.`); }), btn("btn sm", "Cancelar", () => { state.editing = null; renderTrip(); }));
+      f.append(l1, l2, ac); box.append(f); setTimeout(() => i1.focus());
     } else if (d.dormir?.donde) {
       const s = el("div", "sleep");
-      s.append(el("span", null, `🛏 ${d.dormir.donde}${d.dormir.rango_noche ? ` · ${d.dormir.rango_noche} / noche` : ""}${d.dormir.por_que ? ` — ${d.dormir.por_que}` : ""}`));
-      const m = el("div", "mini"); m.append(a("Buscar hotel", L.hoteles(placeQ(d.dormir.donde, t))), btn("btn link", "Editar", () => { state.editing = "sleep-" + d.id; renderTrip(); }));
+      s.append(el("span", null, `🛏 ${d.dormir.donde}${d.dormir.rango_noche ? ` · ${d.dormir.rango_noche}` : ""}`));
+      const m = el("div", "mini"); m.append(a("Hoteles", L.hoteles(placeQ(d.dormir.donde, t))), btn("btn link", "Editar", () => { state.editing = "sleep-" + d.id; renderTrip(); }));
       s.append(m); box.append(s);
-    } else {
-      box.append(btn("btn link", "＋ Agregar dónde dormir", () => { state.editing = "sleep-" + d.id; renderTrip(); }));
-    }
-
-    // Agregar actividad
-    const f = el("form", "addform");
-    const h = el("input"); h.type = "time"; h.id = `add-h-${d.id}`; h.setAttribute("aria-label", "Hora");
-    const tx = el("input"); tx.id = `add-t-${d.id}`; tx.placeholder = "Nueva actividad"; tx.setAttribute("aria-label", "Actividad");
-    const lg = el("input"); lg.id = `add-l-${d.id}`; lg.placeholder = "Lugar (opcional)"; lg.setAttribute("aria-label", "Lugar");
-    const ok = el("button", "btn sm primary", "＋ Agregar"); ok.type = "submit";
-    f.append(h, tx, lg, ok);
-    f.onsubmit = (e) => {
-      e.preventDefault(); if (!tx.value.trim()) { tx.focus(); return; }
-      const item = { id: uid(), hora: h.value, titulo: tx.value.trim(), lugar: lg.value.trim(), propia: true };
-      mutate((tr) => insertByTime(tr.plan.dias[i].actividades, item), `Agregaste “${item.titulo}” al día ${i + 1}.`);
-    };
-    box.append(f);
+    } else if (i < nDays - 1) box.append(btn("btn link", "＋ Dónde dormir", () => { state.editing = "sleep-" + d.id; renderTrip(); }));
     return box;
   }
 
+  // Actividad: una línea con ícono; al tocarla se abren detalle, enlaces y herramientas.
   function renderAct(t, d, i, x, ai, nDays) {
-    const li = el("li", "act");
-    li.append(el("span", "h", x.hora || "—"));
-    const c = el("div", "c");
+    const cat = x.propia ? "pue" : catOf(x.tipo);
+    const li = el("li", "tli");
+    li.append(el("span", "dot c-" + cat, iconOf(x)));
+    const c = el("div", "tc");
     if (state.editing === "act-" + x.id) {
       const f = el("div", "edit");
       const fld = (label, key, cls, type) => { const lb = el("label", "f" + (cls ? " " + cls : ""), label); const inp = el(type === "area" ? "textarea" : "input"); inp.id = `e-${key}-${x.id}`; if (type && type !== "area") inp.type = type; inp.value = x[key] || ""; if (type === "area") inp.rows = 2; lb.append(inp); f.append(lb); return inp; };
       const iH = fld("Hora", "hora", "", "time");
       const iD = el("select"); iD.id = "e-dia-" + x.id; for (let k = 0; k < nDays; k++) { const o = el("option", null, `Día ${k + 1}`); o.value = k; if (k === i) o.selected = true; iD.append(o); }
       const lD = el("label", "f", "Mover al día"); lD.append(iD); f.append(lD);
-      const iT = fld("Actividad", "titulo", "wide");
-      const iDe = fld("Detalle", "detalle", "wide", "area");
-      const iL = fld("Lugar", "lugar", "wide");
-      const iDu = fld("Duración", "duracion");
-      const iC = fld("Costo", "costo");
-      const acts = el("div", "actions wide");
-      acts.append(btn("btn sm primary", "Guardar", () => {
-        const k = Number(iD.value);
-        state.editing = null;
+      const iT = fld("Actividad", "titulo", "wide"); const iDe = fld("Detalle", "detalle", "wide", "area"); const iL = fld("Lugar", "lugar", "wide");
+      const iDu = fld("Duración", "duracion"); const iC = fld("Costo", "costo");
+      const ac = el("div", "actions wide");
+      ac.append(btn("btn sm primary", "Guardar", () => {
+        const k = Number(iD.value); state.editing = null;
         mutate((tr) => {
           const found = findAct(tr, x.id); if (!found) return;
           const upd = { ...found.x, hora: iH.value, titulo: iT.value.trim() || found.x.titulo, detalle: iDe.value.trim(), lugar: iL.value.trim(), duracion: iDu.value.trim(), costo: iC.value.trim() };
-          if (k === found.di && upd.hora === found.x.hora) { found.d.actividades[found.ai] = upd; }
+          if (k === found.di && upd.hora === found.x.hora) found.d.actividades[found.ai] = upd;
           else { found.d.actividades.splice(found.ai, 1); insertByTime(tr.plan.dias[k].actividades, upd); }
         }, k !== i ? `Moviste “${x.titulo}” al día ${k + 1}.` : `Editaste “${x.titulo}”.`);
       }), btn("btn sm", "Cancelar", () => { state.editing = null; renderTrip(); }));
-      f.append(acts);
-      c.append(f);
-      setTimeout(() => iT.focus());
-    } else {
-      c.append(el("span", "t", x.titulo || ""));
-      if (x.detalle) c.append(el("span", "d", x.detalle));
-      const m = el("span", "m");
-      if (x.propia) m.append(el("span", "tag mine", "Mía")); else if (x.tipo) m.append(el("span", "tag", x.tipo));
-      if (x.duracion) m.append(el("span", null, "⏱ " + x.duracion));
-      if (x.costo) m.append(el("span", null, "💲 " + x.costo));
-      if (x.lugar) m.append(el("span", null, "📍 " + x.lugar));
-      c.append(m);
+      f.append(ac); c.append(f); setTimeout(() => iT.focus());
+      li.append(c); return li;
+    }
+    const open = state.open.has(x.id);
+    const head = btn("trow", "", () => { open ? state.open.delete(x.id) : state.open.add(x.id); renderTrip(); });
+    head.setAttribute("aria-expanded", String(open));
+    head.append(el("span", "th", x.hora || "—"), el("span", "tt", x.titulo || ""));
+    const pills = el("span", "pills");
+    if (x.duracion) pills.append(el("span", "pill2", "⏱ " + x.duracion));
+    if (x.costo && !/^gratis$/i.test(x.costo) && x.costo !== "—") pills.append(el("span", "pill2", "💲"));
+    if (x.propia) pills.append(el("span", "tag mine", "Mía"));
+    pills.append(el("span", "chev", open ? "▴" : "▾"));
+    head.append(pills);
+    c.append(head);
+    if (open) {
+      const more = el("div", "tmore");
+      if (x.detalle) more.append(el("p", null, x.detalle));
+      const meta = el("div", "mini");
+      if (x.lugar) meta.append(el("span", "small muted", "📍 " + x.lugar));
+      if (x.costo) meta.append(el("span", "small muted", "💲 " + x.costo));
+      more.append(meta);
       const row = el("div", "row2");
       const lk = el("div", "mini");
-      if (x.lugar && x.tipo !== "traslado") { const q = placeQ(x.lugar, t); lk.append(a("Mapa", L.maps(q)), a("Fotos", L.fotos(q)), a("Info", L.info(x.lugar.split(",")[0]))); }
+      if (x.lugar && x.tipo !== "traslado") { const q = placeQ(x.lugar, t); lk.append(a("🗺️ Mapa", L.maps(q)), a("📷 Fotos", L.fotos(q)), a("📖 Info", L.info(x.lugar.split(",")[0]))); }
       const tools = el("div", "tools");
       const up = btn("ic", "↑", () => mutate((tr) => { const l = tr.plan.dias[i].actividades; [l[ai - 1], l[ai]] = [l[ai], l[ai - 1]]; }), "Subir"); up.disabled = ai === 0;
       const dn = btn("ic", "↓", () => mutate((tr) => { const l = tr.plan.dias[i].actividades; [l[ai + 1], l[ai]] = [l[ai], l[ai + 1]]; }), "Bajar"); dn.disabled = ai === d.actividades.length - 1;
-      tools.append(up, dn,
-        btn("ic", "✎", () => { state.editing = "act-" + x.id; renderTrip(); }, "Editar o mover a otro día"),
+      tools.append(up, dn, btn("ic", "✎", () => { state.editing = "act-" + x.id; renderTrip(); }, "Editar o mover a otro día"),
         btn("ic del", "✕", () => mutate((tr) => { tr.plan.dias[i].actividades = tr.plan.dias[i].actividades.filter((y) => y.id !== x.id); }, `Quitaste “${x.titulo}” del día ${i + 1}.`, "Actividad quitada."), "Quitar actividad"));
-      row.append(lk, tools);
-      c.append(row);
+      row.append(lk, tools); more.append(row);
+      c.append(more);
     }
     li.append(c);
     return li;
+  }
+
+  // ---- Pestaña Dinero
+  function tabDinero(t, p, body, { cur, total, km, carro }) {
+    if (carro && km) {
+      const e = estimarICAR(km); const aj = ajustes();
+      const b = el("div", "panel");
+      b.append(el("h2", null, "🔋⛽ Tu iCAR 03T en este viaje"));
+      // Barra: km en eléctrico vs con generador
+      const split = el("div", "evbar"); split.setAttribute("role", "img"); split.setAttribute("aria-label", `${Math.round(e.ev)} km en eléctrico y ${Math.round(e.gas)} km con gasolina`);
+      const s1 = el("span", "ev", `🔋 ${Math.round(e.ev)} km`); s1.style.flex = String(Math.max(e.ev, 1));
+      split.append(s1);
+      if (e.gas > 0) { const s2 = el("span", "gas", `⛽ ${Math.round(e.gas)} km`); s2.style.flex = String(e.gas); split.append(s2); }
+      b.append(split);
+      const st = el("div", "stats");
+      [[`${km.toLocaleString("es-CO")} km`, "en total"], [e.gal > 0 ? `${e.gal.toFixed(1).replace(".", ",")} gal` : "0 gal", e.gal > ICAR.tanqueGal ? "más que el tanque: tanquea" : "de gasolina"], [money(e.costo, "COP"), "energía + gasolina"]]
+        .forEach(([x, y]) => { const c = el("div"); c.append(el("b", null, x), el("span", null, y)); st.append(c); });
+      b.append(st, el("p", "small muted", `Batería 34,3 kWh (~${aj.evKm} km) · ~${aj.kmGal} km/gal · ${money(aj.precioGal, "COP")}/gal · ${money(aj.precioKwh, "COP")}/kWh`), btn("btn link", "⚙️ Ajustar precios", carroSheet));
+      body.append(b);
+    }
+    const g = el("div", "panel");
+    const gt = el("div", "top"); gt.append(el("h2", null, "💸 Gastado"), btn("btn sm primary", "＋ Anotar gasto", () => gastoSheet(t)));
+    g.append(gt, gastosBox(t, true)); body.append(g);
+    const b = el("div", "panel"); b.id = "sec-presu";
+    b.append(el("h2", null, `💰 Presupuesto · ${money(total, cur)}`), el("p", "small muted", `${money(total / (t.viajeros || 1), cur)} por persona · ${t.viajeros} viajeros`));
+    if (total > 0) b.append(budgetBars(p.presupuesto, cur, total));
+    const det = el("details");
+    det.append(el("summary", "small", "✎ Editar presupuesto"));
+    const w = el("div", "tbl"), tb = el("table"), th = el("thead"), hr = el("tr");
+    hr.append(el("th", null, "Concepto"), el("th", null, "Total"), el("th", null, "")); th.append(hr);
+    const tbody = el("tbody");
+    p.presupuesto.forEach((r) => {
+      r.id = r.id || uid();
+      const tr = el("tr");
+      const c1 = el("td"); const i1 = el("input"); i1.id = "pc-" + r.id; i1.value = r.concepto || ""; i1.setAttribute("aria-label", "Concepto");
+      i1.onchange = () => mutate((x) => { const y = x.plan.presupuesto.find((z) => z.id === r.id); if (y) y.concepto = i1.value; }, "Editaste el presupuesto.");
+      c1.append(i1);
+      const c2 = el("td", "n"); const i2 = el("input"); i2.id = "pt-" + r.id; i2.inputMode = "numeric"; i2.value = Math.round(r.total || 0).toLocaleString("es-CO"); i2.setAttribute("aria-label", "Total");
+      i2.onchange = () => { const n = Number(i2.value.replace(/[^\d]/g, "")) || 0; mutate((x) => { const y = x.plan.presupuesto.find((z) => z.id === r.id); if (y) y.total = n; }, `Cambiaste “${r.concepto}” a ${money(n, cur)}.`); };
+      c2.append(i2);
+      const c3 = el("td"); c3.append(btn("ic del", "✕", () => mutate((x) => { x.plan.presupuesto = x.plan.presupuesto.filter((y) => y.id !== r.id); }, `Quitaste “${r.concepto}” del presupuesto.`, "Concepto quitado."), "Quitar concepto"));
+      tr.append(c1, c2, c3); tbody.append(tr);
+    });
+    tb.append(th, tbody); w.append(tb); det.append(w, btn("btn link", "＋ Agregar concepto", () => mutate((x) => x.plan.presupuesto.push({ id: uid(), concepto: "Nuevo gasto", total: 0 }), "Agregaste un concepto al presupuesto.")));
+    if (state.presuOpen) det.open = true;
+    det.addEventListener("toggle", () => { state.presuOpen = det.open; });
+    b.append(det); body.append(b);
+  }
+
+  // ---- Pestaña Preparar
+  function tabPreparar(t, p, body, { carro }) {
+    body.append(checklistBox(t, false));
+    if (OPEN) { const wx = el("div", "panel"); wx.append(weatherBox(t)); body.append(wx); }
+    if (p.clima?.que_llevar?.length) {
+      const b = el("div", "panel"); b.id = "sec-clima";
+      const n = p.clima.que_llevar.filter((x) => (t.empacado || []).includes(x)).length;
+      b.append(el("h2", null, `🎒 Empacar · ${n}/${p.clima.que_llevar.length}`));
+      if (p.clima.temperatura) b.append(el("p", "small muted", `🌡️ ${p.clima.temperatura}`));
+      const ul = el("ul", "packgrid");
+      p.clima.que_llevar.forEach((item, k) => {
+        const li = el("li"); const lb = el("label"); const cb = el("input"); cb.type = "checkbox"; cb.id = `pack-${k}`;
+        cb.checked = (t.empacado || []).includes(item);
+        cb.onchange = () => patchTrip(t.id, (x) => { const s = new Set(x.empacado || []); cb.checked ? s.add(item) : s.delete(item); x.empacado = [...s]; }, renderTrip);
+        lb.append(cb, el("span", cb.checked ? "done" : null, item)); li.append(lb); ul.append(li);
+      });
+      b.append(ul); body.append(b);
+    }
+    if (carro) body.append(cargaPanel(t));
+    const tips = [...(carro ? (p.energia || []).map((x) => ["🔋", x]) : []), ...(p.consejos || []).map((x) => ["💡", x])];
+    if (tips.length) {
+      const det = el("details", "panel");
+      det.append(el("summary", null, `💡 Consejos (${tips.length})`));
+      const ul = el("ul", "iconlist"); tips.forEach(([ic, x]) => { const li = el("li"); li.append(el("span", null, ic), el("span", null, String(x))); ul.append(li); });
+      det.append(ul); body.append(det);
+    }
+  }
+
+  // ---- Pestaña Ideas
+  function tabIdeas(t, p, body, { carro }) {
+    const links = el("div", "links");
+    if (carro) links.append(a("🗺️ Ruta", L.route([t.origen, t.destino])));
+    else links.append(a("✈️ Vuelos", L.vuelos(t.origen, t.destino)));
+    links.append(a("🏨 Hoteles", L.hoteles(t.destino)), a("📷 Fotos", L.fotos(t.destino)), a("▶️ Videos", L.videos(`${t.destino} qué hacer`)), a("📖 Info", L.info(t.destino)));
+    const lp = el("div", "panel"); lp.append(el("h2", null, "🔎 Explorar"), links); body.append(lp);
+    if (p.mas_ideas?.length) {
+      const b = el("div", "panel"); b.id = "sec-ideas";
+      b.append(el("h2", null, "🌿 Más lugares cerca"));
+      const grid = el("div", "ideas");
+      p.mas_ideas.forEach((idea) => {
+        const c = el("article", "idea");
+        const h = el("div", "ihead"); h.append(el("span", "dot c-" + catOf(idea.tipo), ICONO_TIPO[String(idea.tipo || "").toLowerCase()] || CATS_ACT[catOf(idea.tipo)].icon), el("h3", null, idea.titulo || ""));
+        c.append(h);
+        if (idea.detalle) c.append(el("p", "small", idea.detalle));
+        const q = placeQ(idea.lugar || idea.titulo, t);
+        const lk = el("div", "mini"); lk.append(a("🗺️ Mapa", L.maps(q)), a("📷 Fotos", L.fotos(q))); if (idea.duracion) lk.append(el("span", "small muted", "⏱ " + idea.duracion)); c.append(lk);
+        if (p.dias.length) {
+          const add = el("div", "add");
+          const sel = el("select"); sel.id = "idea-dia-" + idea.id; sel.setAttribute("aria-label", "Día");
+          p.dias.forEach((_, k) => { const o = el("option", null, `Día ${k + 1}`); o.value = k; sel.append(o); });
+          add.append(sel, btn("btn sm primary", "＋ Agregar", () => {
+            const k = Number(sel.value);
+            mutate((tr) => {
+              tr.plan.dias[k].actividades.push({ id: uid(), hora: "", titulo: idea.titulo, detalle: idea.detalle, lugar: idea.lugar, tipo: idea.tipo, duracion: idea.duracion, costo: idea.costo });
+              tr.plan.mas_ideas = tr.plan.mas_ideas.filter((x) => x.id !== idea.id);
+            }, `Agregaste “${idea.titulo}” al día ${k + 1}.`, `Agregado al día ${k + 1}.`);
+          }));
+          c.append(add);
+        }
+        grid.append(c);
+      });
+      b.append(grid); body.append(b);
+    }
+    if (p.gastronomia?.length) {
+      const b = el("div", "panel"); b.id = "sec-comida";
+      b.append(el("h2", null, "🍲 Qué probar"));
+      const grid = el("div", "foodgrid");
+      p.gastronomia.forEach((g) => { const c = el("a", "foodcard"); c.href = L.fotos(`${g.plato} ${t.destino}`); c.target = "_blank"; c.rel = "noopener"; c.append(el("b", null, g.plato || ""), el("span", "small muted", g.donde ? "📍 " + g.donde : "Ver fotos")); grid.append(c); });
+      b.append(grid); body.append(b);
+    }
+  }
+
+  // ---- Pestaña Bitácora
+  function tabBitacora(t, p, body) {
+    body.append(visitaBox(t));
+    const notes = el("div", "panel");
+    notes.append(el("h2", null, "📝 Notas"));
+    const nt = el("textarea"); nt.id = "notes"; nt.rows = 3; nt.placeholder = "Reservas, confirmaciones, contactos…"; nt.value = t.notas || "";
+    const ns = el("span", "small muted");
+    let timer = null;
+    nt.oninput = () => { clearTimeout(timer); ns.textContent = ""; timer = setTimeout(async () => { const tr = state.trips.get(t.id); if (!tr || tr.notas === nt.value) return; tr.notas = nt.value; try { await store.save(tr); ns.textContent = "Guardado"; } catch (e) { saveErr(e); } }, 800); };
+    notes.append(nt, ns); body.append(notes);
+    if (t.historial?.length) {
+      const det = el("details", "panel"); det.append(el("summary", null, `🕘 Cambios (${t.historial.length})`));
+      const ul = el("ul", "log");
+      [...t.historial].reverse().slice(0, 30).forEach((c) => { const li = el("li"); li.append(el("span", "muted", new Date(c.fecha).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }) + " · "), document.createTextNode(c.texto)); ul.append(li); });
+      det.append(ul); body.append(det);
+    }
+    const del = el("div", "actions");
+    del.append(btn("btn sm danger", "🗑 Borrar viaje", () => {
+      del.replaceChildren(el("span", "small", "¿Borrar este viaje?"),
+        btn("btn sm danger", "Sí, borrar", async () => { state.trips.delete(t.id); go("list"); try { await store.remove(t.id); toast("Viaje borrado."); } catch (e) { saveErr(e); } }),
+        btn("btn sm", "No", () => renderTrip()));
+    }));
+    body.append(del, el("p", "notice", "Guía sin consulta en vivo: confirma precios, horarios y reservas."));
   }
 
   // ================= Complementar con Claude =================
@@ -1404,6 +1540,38 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
     });
     picnicMap.fitBounds(pts, { padding: [24, 24] });
   }
+  // Aviso: el mejor plan del próximo fin de semana entre las rutas que aún no conoces.
+  async function findeBanner() {
+    const box = $("finde"); if (!box || !OPEN || !RUTAS.length) return;
+    let best = null;
+    try { const c = JSON.parse(localStorage.getItem("planificador.finde") || "null"); if (c && c.dia === hoyISO() && !state.trips.get(c.best?.id)?.visita) best = c.best; } catch {}
+    if (!best) {
+      try {
+        const cands = RUTAS.filter((r) => r.dias <= 2);
+        const res = await forecast(cands.map((r) => r.lat), cands.map((r) => r.lng));
+        const { sat, sun } = nextWeekend(res[0].daily.time);
+        const rows = cands.map((r, i) => {
+          const dd = res[i].daily; const opts = [[sat, "sáb"], [sun, "dom"]].filter(([k]) => k >= 0)
+            .map(([k, dn]) => ({ dn, rain: dd.precipitation_probability_max[k] ?? 100, ico: WMO(dd.weather_code[k])[0], min: Math.round(dd.temperature_2m_min[k]), max: Math.round(dd.temperature_2m_max[k]) }))
+            .sort((p, q) => p.rain - q.rain);
+          return { id: r.id, nombre: r.nombre, km: r.km, ...opts[0] };
+        }).filter((x) => x.dn);
+        const pend = rows.filter((x) => !state.trips.get(x.id)?.visita);
+        best = (pend.length ? pend : rows).sort((p, q) => p.rain - q.rain || p.km - q.km)[0] || null;
+        try { localStorage.setItem("planificador.finde", JSON.stringify({ dia: hoyISO(), best })); } catch {}
+      } catch { return; }
+    }
+    if (!best) return;
+    const r = RUTAS.find((x) => x.id === best.id); if (!r) return;
+    box.replaceChildren();
+    const txt = el("div", "finde-txt");
+    txt.append(el("span", "small muted", "Este fin de semana te sugiero"), el("h2", null, `${best.ico} ${best.nombre}`),
+      el("span", "small", `${best.dn === "sáb" ? "Sábado" : "Domingo"}: 💧${best.rain} % de lluvia · ${best.min}–${best.max} °C · ${best.km} km`));
+    const acts = el("div", "actions");
+    acts.append(btn("btn primary", "Ver plan", () => addRuta(r, true)), btn("btn sm", "Otras opciones", () => { $("picnic").scrollIntoView({ behavior: "smooth" }); weekendPicker($("picnic-weekend")); }));
+    box.append(txt, acts); box.hidden = false;
+  }
+
   function initPicnicTools() {
     const tools = $("picnic-tools"); if (!tools || !OPEN || !RUTAS.length) return;
     const wk = $("picnic-weekend"), mp = $("picnic-map");
@@ -1584,36 +1752,94 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
     return box;
   }
 
-  // ---- Bitácora: ¿cómo estuvo?
+  // ---- Bitácora: ¿cómo estuvo? (estrellas, nota, verificación de la ruta y fotos)
   const estrellas = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+  const MAX_FOTOS = 4;
+  async function comprimirFoto(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const im = await new Promise((ok, ko) => { const x = new Image(); x.onload = () => ok(x); x.onerror = ko; x.src = url; });
+      const max = 520, sc = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+      const cv = document.createElement("canvas"); cv.width = Math.round(im.naturalWidth * sc); cv.height = Math.round(im.naturalHeight * sc);
+      cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+      return cv.toDataURL("image/jpeg", 0.6);
+    } finally { URL.revokeObjectURL(url); }
+  }
+  function fotoPicker(t, after) {
+    const inp = el("input"); inp.type = "file"; inp.accept = "image/*"; inp.multiple = true; inp.hidden = true; inp.id = "foto-" + t.id;
+    inp.onchange = async () => {
+      const files = [...inp.files].slice(0, MAX_FOTOS - (t.fotos || []).length);
+      if (!files.length) { toast(`Máximo ${MAX_FOTOS} fotos por viaje.`); return; }
+      toast("Guardando fotos…");
+      const nuevas = [];
+      for (const f of files) { try { nuevas.push({ id: uid(), src: await comprimirFoto(f), fecha: new Date().toISOString() }); } catch {} }
+      patchTrip(t.id, (tr) => { tr.fotos = [...(tr.fotos || []), ...nuevas].slice(0, MAX_FOTOS); }, after);
+      toast(`${nuevas.length} ${nuevas.length === 1 ? "foto guardada" : "fotos guardadas"}.`);
+    };
+    document.body.append(inp); inp.click(); setTimeout(() => inp.remove(), 60000);
+  }
+  function verFoto(t, f, after) {
+    const img = el("img"); img.src = f.src; img.alt = "Foto del viaje"; img.className = "bigphoto";
+    const acts = el("div", "actions");
+    const sh = openSheet("📷 Foto del viaje", img, acts);
+    acts.append(btn("btn sm danger", "Quitar foto", () => { patchTrip(t.id, (tr) => { tr.fotos = (tr.fotos || []).filter((x) => x.id !== f.id); }, after); sh.remove(); }));
+  }
   function visitaSheet(t) {
-    const v = t.visita || {};
+    const v = t.visita || {}; const ruta = rutaDe(t);
     let n = v.estrellas || 0;
     const row = el("div", "stars");
-    const draw = () => row.replaceChildren(...[1, 2, 3, 4, 5].map((k) => { const b = btn("star" + (k <= n ? " on" : ""), "★", () => { n = k; draw(); }, `${k} de 5`); return b; }));
+    const draw = () => row.replaceChildren(...[1, 2, 3, 4, 5].map((k) => btn("star" + (k <= n ? " on" : ""), "★", () => { n = k; draw(); }, `${k} de 5`)));
     draw();
     const fecha = el("input"); fecha.id = "visita-fecha"; fecha.type = "date"; fecha.value = v.fecha || hoyISO();
-    const nota = el("textarea"); nota.id = "visita-nota"; nota.rows = 3; nota.placeholder = "¿Qué te gustó? ¿Volverías? Consejos para la próxima vez…"; nota.value = v.nota || "";
+    const nota = el("textarea"); nota.id = "visita-nota"; nota.rows = 2; nota.placeholder = "¿Qué te gustó? ¿Volverías?"; nota.value = v.nota || "";
     const lf = el("label", "f", "Fecha"); lf.append(fecha);
+    const parts = [row, lf, nota];
+    let entrada, reserva, via;
+    if (ruta) {
+      const vf = v.verif || {};
+      const grid = el("div", "grid");
+      const le = el("label", "f", "Entrada que pagaste"); entrada = el("input"); entrada.id = "verif-entrada"; entrada.placeholder = "Ej. $15.000 c/u o gratis"; entrada.value = vf.entrada || ""; le.append(entrada);
+      const sel = (id, opts, val) => { const s2 = el("select"); s2.id = id; opts.forEach((o) => { const op = el("option", null, o); op.value = o; if (o === val) op.selected = true; s2.append(op); }); return s2; };
+      const lr = el("label", "f", "¿Pidieron reserva?"); reserva = sel("verif-reserva", ["No sé", "Sí", "No"], vf.reserva || "No sé"); lr.append(reserva);
+      const lv = el("label", "f", "Estado de la vía"); via = sel("verif-via", ["No sé", "Buena", "Regular", "Mala o destapada"], vf.via || "No sé"); lv.append(via);
+      grid.append(le, lr, lv);
+      parts.push(el("p", "chart-title", "¿Algo cambió en la ruta? (así queda actualizada para la próxima)"), grid);
+    }
     const acts = el("div", "actions");
-    const sh = openSheet("📓 ¿Cómo estuvo el viaje?", row, lf, nota, acts);
-    acts.append(btn("btn primary", "Guardar en la bitácora", () => {
-      patchTrip(t.id, (tr) => { tr.visita = { fecha: fecha.value || hoyISO(), estrellas: n, nota: nota.value.trim() }; }, () => (state.view === "hoy" ? renderHoy() : state.view === "trip" ? renderTrip() : renderList()));
+    const sh = openSheet("📓 ¿Cómo estuvo?", ...parts, acts);
+    const after = () => (state.view === "hoy" ? renderHoy() : state.view === "trip" ? renderTrip() : renderList());
+    acts.append(btn("btn primary", "Guardar", () => {
+      patchTrip(t.id, (tr) => {
+        tr.visita = { fecha: fecha.value || hoyISO(), estrellas: n, nota: nota.value.trim() };
+        if (ruta) tr.visita.verif = { entrada: entrada.value.trim(), reserva: reserva.value, via: via.value };
+      }, after);
       sh.remove(); toast("Guardado en tu bitácora.");
     }));
-    if (t.visita) acts.append(btn("btn", "Quitar de la bitácora", () => { patchTrip(t.id, (tr) => { delete tr.visita; }, () => (state.view === "hoy" ? renderHoy() : renderTrip())); sh.remove(); }));
+    if (t.visita) acts.append(btn("btn", "Quitar de la bitácora", () => { patchTrip(t.id, (tr) => { delete tr.visita; }, after); sh.remove(); }));
+  }
+  function verifTxt(vf) {
+    if (!vf) return "";
+    return [vf.entrada && `entrada ${vf.entrada}`, vf.reserva && vf.reserva !== "No sé" && `reserva: ${vf.reserva.toLowerCase()}`, vf.via && vf.via !== "No sé" && `vía ${vf.via.toLowerCase()}`].filter(Boolean).join(" · ");
   }
   function visitaBox(t) {
     const b = el("div", "panel"); b.id = "sec-bitacora";
-    b.append(el("h2", null, "📓 Bitácora"));
+    const after = () => (state.view === "hoy" ? renderHoy() : renderTrip());
+    const top = el("div", "top"); top.append(el("h2", null, "📓 ¿Cómo estuvo?"));
+    b.append(top);
     if (t.visita) {
       const v = t.visita;
+      top.append(btn("btn sm", "Editar", () => visitaSheet(t)));
       b.append(el("p", "stars-read", estrellas(v.estrellas || 0)), el("p", "small muted", "Visitado el " + new Date(v.fecha + "T12:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" })));
       if (v.nota) b.append(el("p", null, v.nota));
-      b.append(btn("btn sm", "Editar", () => visitaSheet(t)));
+      const vt = verifTxt(v.verif); if (vt) b.append(el("p", "verif", "✔ Verificado por ti: " + vt));
     } else {
-      b.append(el("p", "small muted", "Cuando vuelvas, califica el viaje y anota qué tal estuvo para saber si vale la pena repetirlo."), btn("btn sm primary", "Marcar como visitado", () => visitaSheet(t)));
+      b.append(btn("btn primary", "⭐ Calificar este viaje", () => visitaSheet(t)));
     }
+    const fotos = t.fotos || [];
+    const gal = el("div", "gallery");
+    fotos.forEach((f) => { const im = el("img"); im.src = f.src; im.alt = "Foto del viaje"; im.tabIndex = 0; im.onclick = () => verFoto(t, f, after); gal.append(im); });
+    if (fotos.length < MAX_FOTOS) { const add = btn("addphoto", "📷\nAgregar foto", () => fotoPicker(t, after)); gal.append(add); }
+    b.append(el("p", "chart-title", `Fotos (${fotos.length}/${MAX_FOTOS})`), gal);
     return b;
   }
 
@@ -1683,7 +1909,7 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
     acts.forEach((x) => {
       const li = el("li"); const lb = el("label"); const cb = el("input"); cb.type = "checkbox"; cb.id = "hoy-" + x.id; cb.checked = hechas.has(x.id);
       cb.onchange = () => { const s = new Set(hechas); cb.checked ? s.add(x.id) : s.delete(x.id); saveHoy({ hechas: [...s] }); };
-      lb.append(cb, el("span", hechas.has(x.id) ? "done" : null, `${x.hora ? x.hora + "  " : ""}${x.titulo}`)); li.append(lb); ul.append(li);
+      lb.append(cb, el("span", "dot sm c-" + (x.propia ? "pue" : catOf(x.tipo)), iconOf(x)), el("span", hechas.has(x.id) ? "done" : null, `${x.hora ? x.hora + "  " : ""}${x.titulo}`)); li.append(lb); ul.append(li);
     });
     list.append(ul);
     if (d.dormir?.donde) list.append(el("p", "sleep", `🛏 ${d.dormir.donde}${d.dormir.rango_noche ? " · " + d.dormir.rango_noche : ""}`));
@@ -1779,6 +2005,7 @@ Reglas: en "dias" pon solo los días existentes que cambian, COMPLETOS (todas su
 
   // ================= Arranque =================
   initPicnicTools();
+  setTimeout(findeBanner, 600);
   $("transfer").onclick = transferSheet;
   $("carro").onclick = carroSheet;
   if (window.PLANIFICADOR_SIN_SERVICIO) {
